@@ -54,7 +54,7 @@
     </v-row>
     <v-card-actions class="justify-center pa-0 mt-n3" style="height: 20px;">
       <v-btn text @click="showRatings = !showRatings">
-        COMMENTS<v-icon>{{ showRatings ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
+        RATINGS<v-icon>{{ showRatings ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
       </v-btn>
     </v-card-actions>
     <v-expand-transition>
