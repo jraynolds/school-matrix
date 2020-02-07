@@ -1,6 +1,6 @@
 <template>
-  <div class="matrix">
-    <Labels :labels="labels"/>
+  <div class="matrix" :class="{ small: isSmall }" :style="{ width: leg, height: leg }">
+    <Labels :labels="labels" v-if="!isSmall"/>
     <svg width="200" height="200">
       <defs>
         <radialGradient id="statGradient">
@@ -11,19 +11,11 @@
           <stop offset="80%" stop-color="#74cbff" />
           <stop offset="100%" stop-color="#99e5ff" />
         </radialGradient>
-        <mask id="statsMask" x="0" y="0" width="200" height="200">
+        <mask :id="`statsMask${id}`" x="0" y="0" width="200" height="200">
           <polygon class="polyStats" :points="points" />
         </mask>
       </defs>
       <g>
-        <!-- <LabelLine v-for="(rotation, index) of [0, 1, 2, 3, 4, 5]" 
-          :key="`ll${index}`" 
-          :x1="valueToPoint(6, rotation).x" 
-          :y1="valueToPoint(6, rotation).y" 
-          :x2="valueToPoint(0, rotation).x" 
-          :y2="valueToPoint(0, rotation).y"
-          :labels="labels" 
-          :color="'rgba(0,0,0,0.1)'" /> -->
         <line v-for="(rotation, index) of [0, 1, 2, 3, 4, 5]" 
           :key="`ll${index}`" 
           :x1="valueToPoint(6, rotation).x" 
@@ -38,11 +30,10 @@
           :key="index"
           :points="pointArray([6-index, 6-index, 6-index, 6-index, 6-index, 6-index])"
           :fill="color"
-          style="mask: url(#statsMask)" />
+          :style="`mask: url(#statsMask${id})`" />
         <polygon :points="pointArray([6,6,6,6,6,6])" 
           stroke="rgba(0, 0, 0, 0.2)" 
           fill="none" />
-        <!-- <polygon :points="pointArray([6,6,6,6,6,6])" fill="url(#statGradient)" style="mask: url(#statsMask)" /> -->
         <circle id="help" class="circleOutline" cx="100" cy="100" r="80" />
         <path id="curve" d="M180,100c0,44.2-35.8,80-80,80s-80-35.8-80-80s35.8-80,80-80S180,55.8,180,100z" fill="transparent" />
       </g>
@@ -54,7 +45,7 @@
 import Labels from '@/components/Matrix/Labels'
 
 export default {
-  props: [ "matrixable" ],
+  props: [ "matrix", "type", "isSmall" ],
   components: {
     Labels
   },
@@ -97,20 +88,25 @@ export default {
       ],
       professorLabels: professorLabels,
       schoolLabels: schoolLabels,
+      id: parseInt(Math.random()*1000000000, 10)
     }
   },
   computed: {
+    leg() {
+      if (this.isSmall) return 120;
+      return 200;
+    },
     points() {
       let points = [];
       let labels = this.labels;
       for (let i=0; i<labels.length; i++) {
-        let point = this.valueToPoint(this.matrixable.matrix[labels[i].label], i);
+        let point = this.valueToPoint(this.matrix[labels[i].label], i);
         points.push(point.x + "," + point.y);
       }
       return points;
     },
     labels() {
-      if (this.matrixable.type == "professor") return this.professorLabels;
+      if (this.type == "professor") return this.professorLabels;
       else return this.schoolLabels;
     }
   },
@@ -149,12 +145,14 @@ export default {
 
 <style>
 .matrix {
-  height: 200px;
-  width: 200px;
   margin-left: auto;
   margin-right: auto;
 
   display: grid;
+}
+
+.small {
+  transform: scale(0.5);
 }
 
 .matrix > div, .matrix > svg {
