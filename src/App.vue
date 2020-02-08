@@ -2,111 +2,22 @@
   <v-app id="app">
     <v-navigation-drawer
       v-model="showDrawer"
-      app
-    >
+      app >
       <Drawer />
     </v-navigation-drawer>
 
-    <Head v-on:expandDrawer="showDrawer = !showDrawer"/>
+    <Head v-on:expandDrawer="showDrawer = !showDrawer" 
+      v-on:accountClicked="accountClicked()" />
 
-    <v-content>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-        <!-- <v-row>
-            <v-col cols=12>
-              <Card v-for="professor in professors" 
-              :key="professor.id" 
-              :matrixable="professor" 
-              type="professor"
-              :classes="classes" 
-              :users="users" />
-            </v-col>
-        </v-row> -->
-        <!-- <v-row
-          align="center"
-          justify="center"
-        >
-          <v-col class="text-center">
-            <v-tooltip left>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  :href="source"
-                  icon
-                  large
-                  target="_blank"
-                  v-on="on"
-                >
-                  <v-icon large>mdi-code-tags</v-icon>
-                </v-btn>
-              </template>
-              <span>Source</span>
-            </v-tooltip>
+    <Login :showLogin="showLogin" 
+      v-on:hideDialog="showLogin = false" />
 
-            <v-tooltip right>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  large
-                  href="https://codepen.io/johnjleider/pen/zgxeLQ"
-                  target="_blank"
-                  v-on="on"
-                >
-                  <v-icon large>mdi-codepen</v-icon>
-                </v-btn>
-              </template>
-              <span>Codepen</span>
-            </v-tooltip>
-          </v-col>
-        </v-row> -->
-        <v-row>
-          <v-col>
-            <h1>School Matrix</h1>
-            <h2><i>Rate your teachers, classes and schools!</i></h2>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-
-          </v-col>
-          <v-col>
-            <h3>Explore 10k+ user-submitted ratings</h3>
-            <h4><i>Learn what you can before taking the class!</i></h4>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <h3>Build a model based on what works for you</h3>
-            <h4><i>Discover what makes a teacher, class or school a good fit for you!</i></h4>
-          </v-col>
-          <v-col>
-
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-
-          </v-col>
-          <v-col>
-            <h3>Search and compare based on your model</h3>
-            <h4><i>Make informed decisions and find your best fits!</i></h4>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <h3>Search for a class, teacher or school!</h3>
-          </v-col>
-          <v-col>
-            <h3>Register an account and start!</h3>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-content>
+    <router-view>
+    </router-view>
+        
     <v-footer
       color="indigo"
-      app
-    >
+      app >
       <span class="white--text">&copy; 2019</span>
     </v-footer>
   </v-app>
@@ -115,18 +26,19 @@
 <script>
 import Head from '@/components/Head'
 import Drawer from '@/components/Drawer'
-// import Card from '@/components/Card/Card'
+import Login from '@/components/Login'
 
 export default {
   components: {
     Head,
     Drawer,
-    // Card
+    Login
   },
   data() {
     return {
       showDrawer: false,
       showLogin: false,
+      userLoggedIn: true,
       professors: [
         {
           id: 0,
@@ -251,6 +163,13 @@ export default {
           ]
         }
       ]
+    }
+  },
+  methods: {
+    accountClicked() {
+      if (this.userLoggedIn && this.$route.name != 'account') this.$router.push('account');
+      else if (this.userLoggedIn) this.$router.go();
+      else this.showLogin = true;
     }
   }
 }

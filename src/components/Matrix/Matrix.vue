@@ -1,5 +1,5 @@
 <template>
-  <div class="matrix" :class="{ small: isSmall }" :style="{ width: leg, height: leg }">
+  <div class="matrix justify-center" :class="{ small: isSmall }" :style="{ width: leg, height: leg }">
     <Labels :labels="labels" v-if="!isSmall"/>
     <svg width="200" height="200">
       <defs>
@@ -50,7 +50,7 @@ export default {
     Labels
   },
   data() {
-    let professorLabels = [
+    let teacherLabels = [
       {
         label: "Instructive",
         isHovered: false
@@ -76,7 +76,58 @@ export default {
         isHovered: false
       }
     ];
-    let schoolLabels = []; 
+    let classLabels = [
+      {
+        label: "Instructive",
+        isHovered: false
+      },
+      {
+        label: "Innovative",
+        isHovered: false
+      },
+      {
+        label: "Inspirational",
+        isHovered: false
+      },
+      {
+        label: "Skillful",
+        isHovered: false
+      },
+      {
+        label: "Strict",
+        isHovered: false
+      },
+      {
+        label: "Approachable",
+        isHovered: false
+      }
+    ]; 
+    let schoolLabels = [
+      {
+        label: "Instructive",
+        isHovered: false
+      },
+      {
+        label: "Innovative",
+        isHovered: false
+      },
+      {
+        label: "Inspirational",
+        isHovered: false
+      },
+      {
+        label: "Skillful",
+        isHovered: false
+      },
+      {
+        label: "Strict",
+        isHovered: false
+      },
+      {
+        label: "Approachable",
+        isHovered: false
+      }
+    ];  
     return {
       colors: [
         "rgba(0,191,255,0.4)",
@@ -86,7 +137,8 @@ export default {
         "rgba(25,25,112,0.15)",
         "rgba(0,0,0,0.1)"
       ],
-      professorLabels: professorLabels,
+      teacherLabels: teacherLabels,
+      classLabels: classLabels,
       schoolLabels: schoolLabels,
       id: parseInt(Math.random()*1000000000, 10)
     }
@@ -106,8 +158,9 @@ export default {
       return points;
     },
     labels() {
-      if (this.type == "professor") return this.professorLabels;
-      else return this.schoolLabels;
+      if (this.type == "teacher") return this.teacherLabels;
+      if (this.type == "class") return this.classLabels;
+      return this.schoolLabels;
     }
   },
   methods: {
