@@ -56,6 +56,7 @@ export default {
             "Geography"
           ],
           classes: [0,1],
+          schools: [0],
           img: "https://i.imgur.com/rUltjlQ.png"
         }
       ],
@@ -64,19 +65,37 @@ export default {
           id: 0,
           title: "AP US History",
           departments: ["History"],
-          teachers: [0]
+          teachers: [0],
+          schools: [0]
         },
         {
           id: 1,
           title: "Dueling 101",
           departments: ["Social Studies"],
-          teachers: [0]
+          teachers: [0],
+          schools: [0]
         },
         {
           id: 2,
           title: "Physics 101",
           departments: ["Science", "Physics"],
-          teachers: [1]
+          teachers: [1],
+          schools: [0]
+        }
+      ],
+      schools: [
+        {
+          id: 0,
+          img: "https://i.imgur.com/rUltjlQ.png", 
+          name: "University of Puget Sound",
+          matrix: {
+            "Instructive": 6,
+            "Innovative": 4,
+            "Inspirational": 2,
+            "Skillful": 5,
+            "Strict": 3,
+            "Approachable": 1.5,
+          },
         }
       ],
       users: [

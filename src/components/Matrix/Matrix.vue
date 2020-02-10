@@ -3,14 +3,6 @@
     <Labels :labels="labels" v-if="!isSmall"/>
     <svg width="200" height="200">
       <defs>
-        <radialGradient id="statGradient">
-          <stop offset="0%" stop-color="#4d77bb" />
-          <stop offset="20%" stop-color="#5584d0" />
-          <stop offset="40%" stop-color="#5f97e1" />
-          <stop offset="60%" stop-color="#65aef6" />
-          <stop offset="80%" stop-color="#74cbff" />
-          <stop offset="100%" stop-color="#99e5ff" />
-        </radialGradient>
         <mask :id="`statsMask${id}`" x="0" y="0" width="200" height="200">
           <polygon class="polyStats" :points="points" />
         </mask>
@@ -26,7 +18,7 @@
           :stroke="'rgba(0,0,0,1)'"
           class="labelLine"
           :style="{ opacity: getLineOpacity(index) }" />
-        <polygon v-for="(color, index) in colors" 
+        <polygon v-for="(color, index) in polygonColors" 
           :key="index"
           :points="pointArray([6-index, 6-index, 6-index, 6-index, 6-index, 6-index])"
           :fill="color"
@@ -78,68 +70,77 @@ export default {
     ];
     let classLabels = [
       {
-        label: "Instructive",
+        label: "Experimental",
         isHovered: false
       },
       {
-        label: "Innovative",
+        label: "Hands-on",
         isHovered: false
       },
       {
-        label: "Inspirational",
+        label: "Student-led",
         isHovered: false
       },
       {
-        label: "Skillful",
+        label: "Lecturing",
         isHovered: false
       },
       {
-        label: "Strict",
+        label: "Relevant",
         isHovered: false
       },
       {
-        label: "Approachable",
+        label: "Fast-paced",
         isHovered: false
       }
     ]; 
     let schoolLabels = [
       {
-        label: "Instructive",
+        label: "Resources",
         isHovered: false
       },
       {
-        label: "Innovative",
+        label: "Accommodating",
         isHovered: false
       },
       {
-        label: "Inspirational",
+        label: "Transparent",
         isHovered: false
       },
       {
-        label: "Skillful",
+        label: "Progressive",
         isHovered: false
       },
       {
-        label: "Strict",
+        label: "Demanding",
         isHovered: false
       },
       {
-        label: "Approachable",
+        label: "Grounds",
         isHovered: false
       }
-    ];  
+    ];
+    let polygonHues = {
+      "teacher": 195,
+      "class": 110,
+      "school": 10
+    };
+    let polygonColorOffsets = [
+      [0, 0, -50, -.6],
+      [15, 0, -45, -.7],
+      [30, -25, -45, -.7],
+      [55, -60, -60, -.8],
+      [45, -35, -70, -.85],
+      [0, -100, -100, -.9]
+    ]
     return {
-      colors: [
-        "rgba(0,191,255,0.4)",
-        "rgba(30,144,255,0.3)",
-        "rgba(65,105,225,0.3)",
-        "rgba(72,61,139,0.2)",
-        "rgba(25,25,112,0.15)",
-        "rgba(0,0,0,0.1)"
-      ],
-      teacherLabels: teacherLabels,
-      classLabels: classLabels,
-      schoolLabels: schoolLabels,
+      polygonHues: polygonHues,
+      polygonColorOffsets: polygonColorOffsets,
+      polygonLabels: {
+        "teacher": teacherLabels,
+        "class": classLabels,
+        "school": schoolLabels,
+      },
       id: parseInt(Math.random()*1000000000, 10)
     }
   },
@@ -158,9 +159,20 @@ export default {
       return points;
     },
     labels() {
-      if (this.type == "teacher") return this.teacherLabels;
-      if (this.type == "class") return this.classLabels;
-      return this.schoolLabels;
+      return this.polygonLabels[this.type];
+    },
+    polygonColors() {
+      let colors = [];
+      let color = this.polygonHues[this.type];
+      for (let offset of this.polygonColorOffsets) {
+        let h = color + offset[0];
+        let s = 100 + offset[1];
+        let l = 100 + offset[2];
+        let a = 1 + offset[3];
+        colors.push(`hsla(${h}, ${s}%, ${l}%, ${a})`);
+      }
+
+      return colors;
     }
   },
   methods: {

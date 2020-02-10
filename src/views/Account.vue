@@ -1,5 +1,6 @@
 <template>
   <v-container
+    v-if="user"
     class="fill-height"
     fluid >
     <v-row>
@@ -43,59 +44,32 @@
 
 <script>
 import ModelViewer from '@/components/ModelViewer'
+// const fb = require('@/firebaseConfig.js');
+import dbActions from '@/scripts/dbActions.js'
 
 export default {
+  name: 'account',
   components: {
     ModelViewer
   },
   data() {
     return {
-      user: {
-        firstname: "Jasper",
-        lastname: "Raynolds",
-        email: "jraynolds@pugetsound.edu"
-      },
-      userMatrices: [
-        {
-          type: "teacher",
-          matrix: {
-            "Instructive": 6,
-            "Innovative": 4,
-            "Inspirational": 2,
-            "Skillful": 5,
-            "Strict": 3,
-            "Approachable": 1.5,
-          }
-        },
-        {
-          type: "class",
-          matrix: {
-            "Instructive": 1,
-            "Innovative": 4,
-            "Inspirational": 2,
-            "Skillful": 1,
-            "Strict": 3,
-            "Approachable": 1,
-          }
-        },
-        {
-          type: "school",
-          matrix: {
-            "Instructive": 1,
-            "Innovative": 1,
-            "Inspirational": 1,
-            "Skillful": 5,
-            "Strict": 3,
-            "Approachable": 1.5,
-          }
-        }
-      ]
+      id: "G3Y85OJ0WakBVZ8tKTgJ",
+      user: null
     }
   },
   computed: {
     userInfoChanged() {
       return false;
     }
+  },
+  beforeMount() {
+    // eslint-disable-next-line no-console
+    // console.log(dbActions.getUser(this.id));
+    // this.user = dbActions.getUser(this.id);
+    dbActions.getUser(this.id).then(function(user) {
+      this.user = user;
+    });
   }
 }
 </script>
