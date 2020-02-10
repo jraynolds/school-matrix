@@ -68,7 +68,7 @@ export default {
         isHovered: false
       }
     ];
-    let classLabels = [
+    let courseLabels = [
       {
         label: "Experimental",
         isHovered: false
@@ -122,7 +122,7 @@ export default {
     ];
     let polygonHues = {
       "teacher": 195,
-      "class": 110,
+      "course": 110,
       "school": 10
     };
     let polygonColorOffsets = [
@@ -138,7 +138,7 @@ export default {
       polygonColorOffsets: polygonColorOffsets,
       polygonLabels: {
         "teacher": teacherLabels,
-        "class": classLabels,
+        "course": courseLabels,
         "school": schoolLabels,
       },
       id: parseInt(Math.random()*1000000000, 10)

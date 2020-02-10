@@ -1,13 +1,19 @@
 <template>
   <v-card>
-    <Matrix :matrix="matrixes[0].matrix" :type="matrixes[0].type" v-if="activeTab == 0" />
-    <Matrix :matrix="matrixes[1].matrix" :type="matrixes[1].type" v-if="activeTab == 1" />
-    <Matrix :matrix="matrixes[2].matrix" :type="matrixes[2].type" v-if="activeTab == 2" />
-    <v-card-actions>
+    <Matrix :matrix="matrices['teacher']" 
+      type="teacher" 
+      v-if="activeTab == 0" />
+    <Matrix :matrix="matrices['course']" 
+      type="course" 
+      v-if="activeTab == 1" />
+    <Matrix :matrix="matrices['school']" 
+      type="school" 
+      v-if="activeTab == 2" />
+    <v-card-actions class="justify-center">
       <v-btn class="cardButton" text :class="{ selected: activeTab == 0 }" 
         @click="activeTab = 0">Teachers</v-btn>
       <v-btn class="cardButton" text :class="{ selected: activeTab == 1 }" 
-        @click="activeTab = 1">Classes</v-btn>
+        @click="activeTab = 1">Courses</v-btn>
       <v-btn class="cardButton" text :class="{ selected: activeTab == 2 }" 
         @click="activeTab = 2">Schools</v-btn>
     </v-card-actions>
@@ -18,7 +24,7 @@
 import Matrix from '@/components/Matrix/Matrix'
 
 export default {
-  props: [ "matrixes" ],
+  props: [ "matrices" ],
   components: {
     Matrix
   },

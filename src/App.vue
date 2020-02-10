@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import dbActions from '@/scripts/dbActions.js'
+
 import Head from '@/components/Head'
 import Drawer from '@/components/Drawer'
 import Login from '@/components/Login'
@@ -36,6 +38,7 @@ export default {
   },
   data() {
     return {
+      id: "G3Y85OJ0WakBVZ8tKTgJ",
       showDrawer: false,
       showLogin: false,
       userLoggedIn: true,
@@ -190,6 +193,9 @@ export default {
       else if (this.userLoggedIn) this.$router.go();
       else this.showLogin = true;
     }
+  },
+  beforeMount() {
+    dbActions.setUser(this.id);
   }
 }
 </script>
