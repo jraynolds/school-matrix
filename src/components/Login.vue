@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog" max-width="600px">
+  <v-dialog v-model="showDialog" eager max-width="600px">
     <slot />
     <v-card>
       <v-card-title class="d-flex justify-space-around">
@@ -8,8 +8,9 @@
           <v-btn text :class="{ dimmedText: !signup}"
             @click="login = false; signup = true;">Sign Up</v-btn>
       </v-card-title>
+      <v-col id="firebaseui-auth-container" />
       <v-card v-if="login">
-        <v-card-text>
+        <!-- <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
@@ -25,12 +26,12 @@
           <v-btn color="blue darken-1" text>Forgot Password</v-btn>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" :disabled="!loginReady" @click="userLogin()">Log in</v-btn>
-        </v-card-actions>
+        </v-card-actions> -->
       </v-card>
       <v-card v-if="signup">
         <v-card-text>
           <v-container>
-            <v-row>
+            <v-row class="mt-n6">
               <v-col cols="12" sm="6" md="4">
                 <v-text-field label="First name*" required />
               </v-col>
@@ -63,18 +64,34 @@
 </template>
 
 <script>
+import firebase from "firebase"
+import * as firebaseui from "firebaseui"
+import "firebaseui/dist/firebaseui.css"
+
 export default {
   props: [ "showLogin" ],
   data() {
+    let uiConfig = {
+      signInSuccessUrl: "/account",
+      signInOptions: [
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+      ]
+    };
     return {
+      showMeAlways: true, // For testing
       login: true,
-      signup: false
+      signup: false,
+      ui: new firebaseui.auth.AuthUI(firebase.auth()),
+      uiConfig: uiConfig,
+      dialogShownBefore: false
     }
   },
   computed: {
     showDialog: {
       get() { return this.showLogin },
-      set() { this.$emit('hideDialog')}
+      set() { this.$emit('hideDialog') }
     },
     signupReady() {
       return false;
@@ -90,6 +107,15 @@ export default {
     userLogin() {
 
     }
+  },
+  watch: {
+    login(newVal) {
+      if (newVal == true) document.getElementById("firebaseui-auth-container").style.display = "block";
+      else document.getElementById("firebaseui-auth-container").style.display = "none";
+    }
+  },
+  mounted() {
+    this.ui.start("#firebaseui-auth-container", this.uiConfig);
   }
 }
 </script>
