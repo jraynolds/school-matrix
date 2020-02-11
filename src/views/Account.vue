@@ -17,7 +17,7 @@
           <v-text-field label="email" v-model="inputFields.email" />
         </v-col>
         <v-col>
-          <v-text-field label="school" v-model="inputFields.school.name" />
+          <v-text-field label="school" v-model="inputFields.schoolname" />
         </v-col>
         <v-col>
           <v-btn :disabled="!userInfoChanged">Update</v-btn>
@@ -53,9 +53,9 @@ export default {
   data() {
     return {
       inputFields: {
-        name: "",
-        email: "",
-        school: { name: "" }
+        name: this.$store.getters.getUser.name,
+        email: this.$store.getters.getUser.email,
+        schoolname: this.$store.getters.getUserSchool.name
       }
     }
   },
@@ -79,17 +79,29 @@ export default {
         }
         matrices[key] = matrix;
       }
-
       return matrices;
     },
     userInfoChanged() {
-      return this.inputFields.name != "" && this.inputFields.name != this.$store.getters.getUser.name && this.inputFields.email != "" && this.inputFields.email != this.$store.getters.getUser.email && this.inputFields.school.name != "" && this.inputFields.school.name != this.$store.getters.getUser.school.name;
+      if (this.inputFields.name == "" || this.inputFields.email == "" || this.inputFields.schoolname == "") return false;
+      if (this.inputFields.name == this.$store.getters.getUser.name && this.inputFields.email == this.$store.getters.getUser.email && this.inputFields.schoolname == this.$store.getters.getUserSchool.name) return false;
+      return true;
+    },
+  },
+  methods: {
+    updateUser(user, school) {
+      this.inputFields.name = user.name;
+      this.inputFields.email = user.email;
+      this.inputFields.schoolname = school.name;
     }
   },
-  mounted() {
-    this.inputFields.name = this.$store.getters.getUser.name;
-    this.inputFields.email = this.$store.getters.getUser.email;
-    // this.inputFields.school = this.$store.getters.getUserSchool;
+  created() {
+    let vm = this;
+
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'setUserSchool') {
+        vm.updateUser(state.user, state.userSchool);
+      }
+    })
   }
 }
 </script>

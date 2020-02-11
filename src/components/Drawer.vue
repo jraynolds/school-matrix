@@ -25,5 +25,7 @@ export default {
 </script>
 
 <style>
-
+.v-navigation-drawer--fixed {
+  z-index: 10 !important;
+}
 </style>
