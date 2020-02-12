@@ -9,8 +9,7 @@
     <Head v-on:expandDrawer="showDrawer = !showDrawer" 
       v-on:accountClicked="accountClicked()" />
 
-    <Login :showLogin="showLogin" 
-      v-on:hideDialog="showLogin = false" />
+    <LoginDialog />
 
     <router-view>
     </router-view>
@@ -28,26 +27,40 @@
 
 import Head from '@/components/Head'
 import Drawer from '@/components/Drawer'
-import Login from '@/components/Login'
+import LoginDialog from '@/components/Login/LoginDialog'
 
 export default {
   components: {
     Head,
     Drawer,
-    Login
+    LoginDialog
   },
   data() {
     return {
       id: "G3Y85OJ0WakBVZ8tKTgJ",
       showDrawer: false,
-      showLogin: false,
+      // showLogin: true
+    }
+  },
+  computed: {
+    showLogin() {
+      // eslint-disable-next-line no-console
+      console.log(this.$store);
+      return this.$store.getters.getLoginShown;
     }
   },
   methods: {
     accountClicked() {
       if (this.$store.getters.userLoggedIn && this.$route.name != 'account') this.$router.push('account');
       else if (this.userLoggedIn) this.$router.go();
-      else this.showLogin = true;
+      else this.$store.commit('SET_LOGIN_SHOWN', true);
+    },
+    logMe() {
+      this.showLogin = false;
+      // eslint-disable-next-line no-console
+      console.log("At least we got here.");
+      // eslint-disable-next-line no-console
+      console.log(this.showLogin);
     }
   },
   beforeMount() {

@@ -1,16 +1,17 @@
 <template>
-  <div v-if="user.email" class="card horizontal" style="max-width:400px;margin:0 auto;">
-    <div class="card-image" style="margin-top:25px;margin-left:10px;"> 
-      <img :src="user.photoURL" style="width:75px;height:75px;border-radius:50%;border:4px solid #333" /> 
+  <div v-if="user" class="card horizontal" style="max-width:400px;margin:0 auto;">
+    <div class="mt-12 pt-12">{{ user.displayName }}</div>
+    <!-- <div class="card-image" style="margin-top:25px;margin-left:10px;"> 
+      <img :src="photoURL" style="width:75px;height:75px;border-radius:50%;border:4px solid #333" /> 
     </div>
     <div class="card-stacked">
       <div class="card-content">
-        <p> name: <strong>{{user.displayName}}</strong><br />email:<strong>{{user.email}}</strong><br/>uid:
-          <strong>{{user.uid}}</strong> <br />provider: <strong
-                    class="teal-text">{{user.providerID}}</strong> 
+        <p> name: <strong>{{displayName}}</strong><br />email:<strong>{{email}}</strong><br/>uid:
+          <strong>{{uid}}</strong> <br />provider: <strong
+                    class="teal-text">{{providerID}}</strong> 
         </p>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <!-- <v-container
@@ -72,13 +73,7 @@ export default {
       //   email: this.$store.getters.getUser.email,
       //   schoolname: this.$store.getters.getUserSchool.name
       // }
-      user: {
-        email: null,
-        photoURL: null,
-        displayName: null,
-        uid: null,
-        providerID: null
-      }
+      user: null
     }
   },
   computed: {
@@ -109,6 +104,32 @@ export default {
   //     return true;
   //   },
   },
+  watch: {
+    user() {
+      // eslint-disable-next-line no-console
+      console.log("user updated");
+    },
+    email(newval, oldval) {
+      // eslint-disable-next-line no-console
+      console.log("email updated");
+      // eslint-disable-next-line no-console
+      console.log(newval);
+      // eslint-disable-next-line no-console
+      console.log(oldval);
+      // eslint-disable-next-line no-console
+      console.log(this.displayAccount);
+      // this.doShow = true;
+      this.testKey++;
+
+      this.$nextTick(() => {
+        // eslint-disable-next-line no-console
+        console.log("this is the next tick.");
+        this.doShow = true;
+        this.testKey++;
+        this.$forceUpdate();
+      });
+    }
+  },
   methods: {
     // updateUser(user, school) {
     //   this.inputFields.name = user.name;
@@ -116,8 +137,8 @@ export default {
     //   this.inputFields.schoolname = school.name;
     // }
   },
-  created() {
-    // let vm = this;
+  mounted() {
+    let vm = this;
 
     // this.$store.subscribe((mutation, state) => {
     //   if (mutation.type === 'setUserSchool') {
@@ -128,16 +149,21 @@ export default {
       // eslint-disable-next-line no-console
       console.log(user);
       // eslint-disable-next-line no-console
-      console.log(this.user);
+      console.log(vm.user);
       if (user) {
-        this.user.email = user.email;
-        this.user.photoURL = user.photoURL;
-        this.user.displayName = user.displayName;
-        this.user.uid = user.uid;
-        this.user.providerID = user.providerData[0].providerId;
+        vm.user = {
+          // email: user.email,
+          // photoURL: user.photoURL,
+          displayName: user.displayName,
+          // uid: user.uid,
+          // providerID: user.providerData[0].providerID
+        };
+        // vm.$set(vm.user.email, "email", user.email);
+        // vm.$set(vm.user.photoURL, "email", user.photoURL);
+        // vm.$set(vm.user.displayName, "email", user.displayName);
+        // vm.$set(vm.user.uid, "email", user.uid);
+        // vm.$set(vm.user.providerID, "email", user.providerData[0].providerId);
       }
-      // eslint-disable-next-line no-console
-      console.log(this.user);
     });
   },
 }

@@ -50,6 +50,7 @@ const getDefaultState = () => {
     userSchool: {
       name: ""
     },
+    showLogin: false
   };
 };
 
@@ -69,6 +70,9 @@ export default new Vuex.Store({
     },
     getUserSchool: state => {
       return state.userSchool;
+    },
+    getLoginShown: state => {
+      return state.showLogin;
     }
   },
   mutations: {
@@ -81,6 +85,9 @@ export default new Vuex.Store({
       dbActions.setUserReviews(payload.id);
       dbActions.setUserSchool(payload.user.school);
     },
+    SET_LOGIN_SHOWN(state, shown) {
+      state.showLogin = shown;
+    },
     ADD_REVIEW(state, payload) {
       state.userReviews[payload["type"]].push(payload["review"]);
     },
@@ -89,7 +96,7 @@ export default new Vuex.Store({
     },
     RESET(state) {
       Object.assign(state, getDefaultState());
-    }
+    },
   },
   actions: {
     // login: ({ commit, dispatch }, { token, user }) => {
