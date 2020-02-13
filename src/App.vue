@@ -24,6 +24,7 @@
 
 <script>
 // import dbActions from '@/scripts/dbActions.js'
+import firebase from "firebase"
 
 import Head from '@/components/Head'
 import Drawer from '@/components/Drawer'
@@ -45,14 +46,14 @@ export default {
   computed: {
     showLogin() {
       // eslint-disable-next-line no-console
-      console.log(this.$store);
+      // console.log(this.$store);
       return this.$store.getters.getLoginShown;
     }
   },
   methods: {
     accountClicked() {
-      if (this.$store.getters.userLoggedIn && this.$route.name != 'account') this.$router.push('account');
-      else if (this.userLoggedIn) this.$router.go();
+      if (firebase.auth().currentUser && this.$route.name != 'account') this.$router.push('account');
+      else if (firebase.auth().currentUser) this.$router.go();
       else this.$store.commit('SET_LOGIN_SHOWN', true);
     },
     logMe() {

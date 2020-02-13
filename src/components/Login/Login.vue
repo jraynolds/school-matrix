@@ -42,20 +42,35 @@ import "firebaseui/dist/firebaseui.css"
 
 export default {
   data() {
-    let uiConfig = {
-      signInSuccessUrl: "/account",
-      signInOptions: [
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.FacebookAuthProvider.PROVIDER_ID
-      ]
-    };
+    // let uiConfig = {
+    //   // signInSuccessUrl: "/",
+    //   signInOptions: [
+    //     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    //     firebase.auth.FacebookAuthProvider.PROVIDER_ID
+    //   ],
+    //   callbacks: {
+    //     signInSuccessWithAuthResult: function() {
+    //       this.$router.push({ path: "account" });
+    //       return false;
+    //     }
+    //   }
+    // };
     let errorTranslations = {
       "There is no user record corresponding to this identifier. The user may have been deleted.": "No such user found.",
       "The password is invalid or the user does not have a password.": "No such user found.",
     };
     return {
       ui: new firebaseui.auth.AuthUI(firebase.auth()),
-      uiConfig: uiConfig,
+      uiConfig: {
+        // signInSuccessUrl: "/",
+        signInOptions: [
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.FacebookAuthProvider.PROVIDER_ID
+        ],
+        callbacks: {
+          signInSuccessWithAuthResult: function() {this.loginProcess()}
+        }
+      },
       errorTranslations: errorTranslations,
       email: "",
       password: "",
@@ -63,7 +78,8 @@ export default {
       failedOn: {
         email: "",
         password: ""
-      }
+      },
+      loginPressed: false
     }
   },
   computed: {
@@ -93,7 +109,8 @@ export default {
         .auth()
         .signInWithEmailAndPassword(vm.email, vm.password)
         .then(function() {
-          vm.$store.commit('SET_LOGIN_SHOWN', false);
+          vm.$store.dispatch('setLoginShown', false);
+          // vm.$store.dispatch('setUser', user);
           vm.$router.push({ path: "account" });
         })
         .catch(err => {
@@ -101,10 +118,18 @@ export default {
           vm.failedOn.password = vm.password;
           if (vm.errorTranslations[err.message]) vm.error = vm.errorTranslations[err.message];
         });
+    },
+    loginProcess() {
+      this.$router.push({ path: `account` });
     }
   },
   mounted() {
     this.ui.start("#firebaseui-auth-container", this.uiConfig);
+
+    let vm = this;
+    firebase.auth().onAuthStateChanged(function() {
+      if (vm.loginPressed) vm.$router.push({ path: "account" });
+    });
   }
 }
 </script>
