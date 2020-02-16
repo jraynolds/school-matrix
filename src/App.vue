@@ -23,8 +23,8 @@
 </template>
 
 <script>
-// import dbActions from '@/scripts/dbActions.js'
-import firebase from "firebase"
+import { auth } from "@/firebaseConfig"
+import store from "@/store.js"
 
 import Head from '@/components/Head'
 import Drawer from '@/components/Drawer'
@@ -40,32 +40,27 @@ export default {
     return {
       id: "G3Y85OJ0WakBVZ8tKTgJ",
       showDrawer: false,
-      // showLogin: true
-    }
-  },
-  computed: {
-    showLogin() {
-      // eslint-disable-next-line no-console
-      // console.log(this.$store);
-      return this.$store.getters.getLoginShown;
     }
   },
   methods: {
     accountClicked() {
-      if (firebase.auth().currentUser && this.$route.name != 'account') this.$router.push('account');
-      else if (firebase.auth().currentUser) this.$router.go();
+      // eslint-disable-next-line no-console
+      console.log(auth.currentUser);
+      if (auth.currentUser && this.$route.name != 'account') this.$router.push('account');
+      else if (auth.currentUser) this.$router.go();
       else this.$store.commit('SET_LOGIN_SHOWN', true);
-    },
-    logMe() {
-      this.showLogin = false;
-      // eslint-disable-next-line no-console
-      console.log("At least we got here.");
-      // eslint-disable-next-line no-console
-      console.log(this.showLogin);
     }
   },
   beforeMount() {
     // dbActions.setUser(this.id);
+  },
+  created() {
+    // let vm = this;
+
+    auth.onAuthStateChanged(user => {
+      // store.dispatch('setUser', user);
+      store.dispatch('loadUser', user);
+    });
   }
 }
 </script>

@@ -1,62 +1,33 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import Axios from 'axios'
-// import createPersistedState from 'vuex-persistedstate'
-
-// import dbActions from '@/scripts/dbActions.js'
-
-// import AuthService from '@/services/AuthService.js'
+const fb = require("@/firebaseConfig.js")
 
 Vue.use(Vuex)
 
 const getDefaultState = () => {
   return {
-    // token: '',
-    // user: {
-    //   name: "",
-    //   email: "",
-    //   matrices: {
-    //     teacher: {
-    //       Approachable: 1,
-    //       Innovative: 1,
-    //       Inspirational: 1,
-    //       Instructive: 1,
-    //       Skillful: 1,
-    //       Strict: 1
-    //     },
-    //     course: {
-    //       Experimental: 1,
-    //       "Fast-paced": 1,
-    //       "Hands-on": 1,
-    //       Lecturing: 1,
-    //       Relevant: 1,
-    //       "Student-led": 1
-    //     },
-    //     school: {
-    //       Accommodating: 1,
-    //       Demanding: 1,
-    //       Grounds: 1,
-    //       Progressive: 1,
-    //       Resources: 1,
-    //       Transparent: 1
-    //     }
-    //   }
-    // },
-    // userReviews: {
-    //   teacher: [],
-    //   course: [],
-    //   school: []
-    // },
-    // userSchool: {
-    //   name: ""
-    // },
+    token: "",
+    user: {
+      uid: '',
+      email: '',
+      name: '',
+      school: {
+        name: '',
+        location: null
+      },
+      reviews: {
+        course: [],
+        teacher: [],
+        school: []
+      },
+      matrices: null,
+    },
     showLogin: false
   };
 };
 
 export default new Vuex.Store({
   strict: true,
-  // plugins: [createPersistedState()],
   state: getDefaultState(),
   getters: {
     isLoggedIn: state => {
@@ -66,10 +37,7 @@ export default new Vuex.Store({
       return state.user;
     },
     getUserReviews: state => {
-      return state.userReviews;
-    },
-    getUserSchool: state => {
-      return state.userSchool;
+      return state.user.reviews;
     },
     getLoginShown: state => {
       return state.showLogin;
@@ -80,29 +48,70 @@ export default new Vuex.Store({
       state.token = token;
     },
     SET_USER(state, user) {
-      state.user = user;
-      // state.user.id = payload.id;
-      // dbActions.setUserReviews(payload.id);
-      // dbActions.setUserSchool(payload.user.school);
+      state.user.uid = user.uid;
+      state.user.email = user.email;
+    },
+    SET_USER_PROFILE(state, payload) {
+      state.user.name = payload.name;
+      state.user.matrices = payload.matrices;
+    },
+    SET_USER_SCHOOL(state, school) {
+      state.user.school = school;
     },
     SET_LOGIN_SHOWN(state, shown) {
       state.showLogin = shown;
     },
-    ADD_REVIEW(state, payload) {
-      state.userReviews[payload["type"]].push(payload["review"]);
-    },
-    SET_USER_SCHOOL(state, school) {
-      state.userSchool = school;
-    },
-    RESET(state) {
-      Object.assign(state, getDefaultState());
-    },
+    SET_USER_REVIEWS(state, payload) {
+      // eslint-disable-next-line no-console
+      console.log(payload);
+      state.user.reviews[payload.type] = payload.array;
+    }
+    // RESET(state) {
+    //   Object.assign(state, getDefaultState());
+    // },
   },
   actions: {
-    setUser ({ commit }, payload) {
-      commit('SET_USER', payload.user);
+    // User actions
+    loadUser({ commit, dispatch }, user) {
+      commit('SET_USER', user);
+      dispatch('loadUserProfile', user.email);
+      dispatch('loadUserReviews', user.email);
     },
-    setLoginShown ({ commit }, shown) {
+    loadUserProfile({ commit, dispatch }, email) {
+      fb.userCollection.doc(email).get().then(res =>{
+        commit('SET_USER_PROFILE', {
+          name: res.data().name,
+          matrices: res.data().matrices,
+        });
+        dispatch('loadUserSchool', res.data().school);
+      }).catch(err => {
+        // eslint-disable-next-line no-console
+        console.log(err);
+      });
+    },
+    loadUserSchool({ commit }, school) {
+      fb.schoolCollection.doc(school).get().then(res => {
+        commit('SET_USER_SCHOOL', res.data());
+      }).catch(err => {
+        // eslint-disable-next-line no-console
+        console.log(err);
+      });
+    },
+    loadUserReviews({ commit }, email) {
+      let course = [];
+      // let teacher = [];
+      // let school = [];
+
+      fb.courseReviewCollection.where('user', '==', email).get().then(snapshot => {
+        if (snapshot.empty) return;
+        snapshot.forEach(doc => {
+          course.push(doc.data());
+        })
+        commit('SET_USER_REVIEWS', { type: "course", array: course });
+      });
+    },
+    // Document actions
+    setLoginShown({ commit }, shown) {
       commit('SET_LOGIN_SHOWN', shown);
     },
     // login: ({ commit, dispatch }, { token, user }) => {

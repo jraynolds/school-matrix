@@ -62,7 +62,6 @@ export default {
     return {
       ui: new firebaseui.auth.AuthUI(firebase.auth()),
       uiConfig: {
-        // signInSuccessUrl: "/",
         signInOptions: [
           firebase.auth.GoogleAuthProvider.PROVIDER_ID,
           firebase.auth.FacebookAuthProvider.PROVIDER_ID

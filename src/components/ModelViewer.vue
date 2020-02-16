@@ -32,6 +32,10 @@ export default {
     return {
       activeTab: 0
     }
+  },
+  mounted() {
+// eslint-disable-next-line no-console
+    console.log(this.matrices);
   }
 }
 </script>
