@@ -45,7 +45,7 @@ export default {
   methods: {
     accountClicked() {
       // eslint-disable-next-line no-console
-      console.log(auth.currentUser);
+      // console.log(auth.currentUser);
       if (auth.currentUser && this.$route.name != 'account') this.$router.push('account');
       else if (auth.currentUser) this.$router.go();
       else this.$store.commit('SET_LOGIN_SHOWN', true);
@@ -55,11 +55,10 @@ export default {
     // dbActions.setUser(this.id);
   },
   created() {
-    // let vm = this;
-
     auth.onAuthStateChanged(user => {
-      // store.dispatch('setUser', user);
-      store.dispatch('loadUser', user);
+      // eslint-disable-next-line no-console
+      // console.log(user);
+      if (user) store.dispatch('loadUser', user);
     });
   }
 }

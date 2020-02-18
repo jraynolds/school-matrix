@@ -10,35 +10,67 @@
         </v-img>
       </v-col>
       <v-col>
-        <v-col class="justify-center">
-          <v-text-field label="name" v-model="name" :loading="name == ''" />
-        </v-col>
-        <v-col>
-          <v-text-field label="email" 
-            v-model="email" 
-            :rules="[ rules.email ]" 
-            :loading="email == ''" />
-        </v-col>
-        <v-col>
-          <v-text-field label="school" 
-            v-model="school" 
-            :loading="school == ''" />
-        </v-col>
-        <v-col>
-          <v-btn :disabled="!userInfoChanged">Update</v-btn>
-        </v-col>
+        <v-row>
+          <v-col sm="5">
+            <v-text-field label="name" v-model="name" :loading="name == ''" />
+          </v-col>
+          <v-col sm="7">
+            <v-text-field label="email" 
+              v-model="email" 
+              :rules="[ rules.email ]" 
+              :loading="email == ''" />
+          </v-col>
+          <v-col sm="6">
+            <v-text-field label="school" 
+              v-model="school" 
+              :loading="school == 'loading...'" />
+          </v-col>
+          <v-col sm="6">
+          </v-col>
+          <v-col sm="4">
+            <v-text-field label="new password" 
+              v-model="inputFields.passwords.new"
+              :rules="[rules.password]" 
+              :append-icon="newShowPassword"
+              :type="showPasswords.new ? 'text' : 'password'"
+              :counter="inputFields.passwords.new.length < 8 ? 8 : false"
+              @click:append="showPasswords.new = !showPasswords.new" />
+          </v-col>
+          <v-slide-x-transition>
+            <v-row cols="8" v-show="inputFields.passwords.new.length > 0" >
+              <v-col sm="6">
+                <v-text-field label="confirm new password" 
+                  v-model="inputFields.passwords.confirm"
+                  :rules="[rules.confirmPassword]" 
+                  :append-icon="confirmShowPassword"
+                  :type="showPasswords.confirm ? 'text' : 'password'"
+                  @click:append="showPasswords.confirm = !showPasswords.confirm" />
+              </v-col>
+              <v-col sm="6">
+                <v-text-field label="old password" 
+                  v-model="inputFields.passwords.old"
+                  :append-icon="oldShowPassword"
+                  :type="showPasswords.old ? 'text' : 'password'"
+                  @click:append="showPasswords.old = !showPasswords.old" />
+              </v-col>
+            </v-row>
+          </v-slide-x-transition>
+          <v-col cols="12">
+            <v-btn :disabled="!userInfoChanged">Update</v-btn>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <h1>Model (Chosen)</h1>
-        <ModelViewer :matrices="aggregateMatrices" :tabs="['Teachers', 'Classes', 'Schools']" />
+        <ModelViewer :matrices="matrices" :tabs="['Teachers', 'Classes', 'Schools']" />
         <v-btn class="mt-2">Change preferred models</v-btn>
       </v-col>
       <v-col>
         <h1>Model (Aggregate)</h1>
         <h3><i></i></h3>
-        <ModelViewer :matrices="matrices" :tabs="['Teachers', 'Classes', 'Schools']" />
+        <ModelViewer :matrices="aggregateMatrices" :tabs="['Teachers', 'Classes', 'Schools']" />
         <v-btn class="mt-2">See your reviews</v-btn>
       </v-col>
     </v-row>
@@ -48,7 +80,7 @@
 </template>
 
 <script>
-// import { auth } from "@/firebaseConfig"
+import { getDefaultMatrixSet } from '@/components/Matrix/matrices.js'
 
 import ModelViewer from '@/components/ModelViewer'
 
@@ -62,13 +94,29 @@ export default {
       email: value => {
         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return pattern.test(value) || 'Invalid e-mail.';
+      },
+      password: value => {
+        return value.length > 7;
+      },
+      confirmPassword: value => {
+        return value == this.inputFields.passwords.new || 'Must be the same as the first password.';
       }
     };
     return {
       inputFields: {
         name: '',
         email: '',
-        school: ''
+        school: 'loading...',
+        passwords: {
+          new: '',
+          confirm: '',
+          old: ''
+        },
+      },
+      showPasswords: {
+        new: false,
+        confirm: false,
+        old: false
       },
       rules: rules
     }
@@ -92,11 +140,28 @@ export default {
     },
     school: {
       get: function() {
-        return this.$store.getters.getUser.school.name;
+        let school = this.$store.getters.getUser.school;
+        if (school.name == "") return "";
+        return `${school.name}, ${school.location.city} ${school.location.state.slice(0, 2).toUpperCase()}`;
       },
       set: function(newVal) {
         this.inputFields.school = newVal;
       }
+    },
+    newShowPassword() {
+      if (this.inputFields.passwords.new.length < 1) return '';
+      else if(!this.showPasswords.new) return "mdi-eye-off";
+      return "mdi-eye";
+    },
+    confirmShowPassword() {
+      if (this.inputFields.passwords.confirm.length < 1) return '';
+      else if(!this.showPasswords.confirm) return "mdi-eye-off";
+      return "mdi-eye";
+    },
+    oldShowPassword() {
+      if (this.inputFields.passwords.old.length < 1) return '';
+      else if(!this.showPasswords.old) return "mdi-eye-off";
+      return "mdi-eye";
     },
     matrices() {
       return this.$store.getters.getUser.matrices;
@@ -108,47 +173,11 @@ export default {
       return true;
     },
     aggregateMatrices() {
-      let aggregates = { 
-        teacher: {
-          Approachable: 3,
-          Innovative: 3,
-          Inspirational: 3,
-          Instructive: 3,
-          Skillful: 3,
-          Strict: 3
-        }, course: {
-          Experimental: 3,
-          "Fast-paced": 6,
-          "Hands-on": 3,
-          Lecturing: 3,
-          Relevant: 3,
-          "Student-led": 3
-        }, school: {
-          Accommodating: 3,
-          Demanding: 3,
-          Grounds: 3,
-          Progressive: 3,
-          Resources: 3,
-          Transparent: 3
-        }
-      };
-
-// eslint-disable-next-line no-console
-      console.log(aggregates);
-
+      let aggregates = getDefaultMatrixSet();
       let reviews = this.$store.getters.getUserReviews;
-
-// eslint-disable-next-line no-console
-      console.log(reviews);
-
       if (reviews.teacher.length > 0) aggregates.teacher = this.getAverageScores(aggregates.teacher, reviews.teacher);
-// eslint-disable-next-line no-console
-      console.log(reviews.course);
       if (reviews.course.length > 0) aggregates.course = this.getAverageScores(aggregates.course, reviews.course);
       if (reviews.teacher.school > 0) aggregates.school = this.getAverageScores(aggregates.school, reviews.school);
-
-// eslint-disable-next-line no-console
-      console.log(aggregates);
 
       return aggregates;
     }
@@ -157,18 +186,12 @@ export default {
     getAverageScores(matrix, reviews) {
       for (let key in matrix) matrix[key] = 0;
       let i=0;
-// eslint-disable-next-line no-console
-        console.log(reviews);
       for (i=0; i<reviews.length; i++) {
-// eslint-disable-next-line no-console
-        console.log(reviews[i]);
         for (let key in matrix) {
           matrix[key] += reviews[i].matrix[key];
         }
       }
       for (let key in matrix) matrix[key] /= (i + 1);
-// eslint-disable-next-line no-console
-        console.log(matrix);
       return matrix;
     }
   }

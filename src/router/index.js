@@ -9,7 +9,10 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: {
+      title: "School Matrix - Find your Model!"
+    }
   },
   {
     path: '/account',
@@ -19,6 +22,7 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "account" */ '../views/Account.vue'),
     meta: {
+      title: "Your Account",
       requiresAuth: true
     }
   },
@@ -27,7 +31,7 @@ const routes = [
     name: 'school',
     component: () => import('../views/School.vue'),
     meta: {
-      auth: true
+      requiresAuth: true
     }
   }
 ]
@@ -38,17 +42,22 @@ const router = new VueRouter({
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.auth)) {
-//     firebase.auth().onAuthStateChanged(user => {
-//       if (user) next()
-//       else next(
-//         { path: "/login" }
-//       ) 
-//     });
-//   } else {
-//     next();
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  let nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
+  // eslint-disable-next-line no-console
+  console.log(nearestWithTitle);
+  if (nearestWithTitle) document.title = nearestWithTitle.meta.title;
+  // if (to.matched.some(record => record.meta.auth)) {
+  //   firebase.auth().onAuthStateChanged(user => {
+  //     if (user) next()
+  //     else next(
+  //       { path: "/login" }
+  //     ) 
+  //   });
+  // } else {
+  //   next();
+  // }
+  next();
+})
 
 export default router

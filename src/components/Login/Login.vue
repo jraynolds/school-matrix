@@ -1,27 +1,26 @@
 <template>
-  <v-card id="login">
+  <div id="login">
     <v-card-text>
       <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field label="Email" 
-                required 
-                v-model="email"
-                type="email" 
-                @keyup.enter="tryLogin()" />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field label="Password"
-                type="password" 
-                required 
-                v-model="password" 
-                @keyup.enter="tryLogin()" />
-            </v-col>
-            <v-col class="py-0 my-n5">
-              <v-alert type="error" v-if="showError" class="pa-1">{{ error }}</v-alert>
-            </v-col>
-          </v-row>
-        <v-col id="firebaseui-auth-container" />
+        <v-row>
+          <v-col cols="12">
+            <v-text-field label="Email" 
+              required 
+              v-model="email"
+              type="email" 
+              @keyup.enter="tryLogin()" />
+          </v-col>
+          <v-col cols="12">
+            <v-text-field label="Password"
+              type="password" 
+              required 
+              v-model="password" 
+              @keyup.enter="tryLogin()" />
+          </v-col>
+          <v-col class="py-0 my-n5">
+            <v-alert type="error" v-if="showError" class="pa-1">{{ error }}</v-alert>
+          </v-col>
+        </v-row>
       </v-container>
     </v-card-text>
     <v-card-actions>
@@ -32,53 +31,22 @@
         @click="login()"
         type="submit">Log in</v-btn>
     </v-card-actions>
-  </v-card>
+  </div>
 </template>
 
 <script>
 import firebase from "firebase"
-import * as firebaseui from "firebaseui"
-import "firebaseui/dist/firebaseui.css"
 
 export default {
   data() {
-    // let uiConfig = {
-    //   // signInSuccessUrl: "/",
-    //   signInOptions: [
-    //     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    //     firebase.auth.FacebookAuthProvider.PROVIDER_ID
-    //   ],
-    //   callbacks: {
-    //     signInSuccessWithAuthResult: function() {
-    //       this.$router.push({ path: "account" });
-    //       return false;
-    //     }
-    //   }
-    // };
-    let errorTranslations = {
-      "There is no user record corresponding to this identifier. The user may have been deleted.": "No such user found.",
-      "The password is invalid or the user does not have a password.": "No such user found.",
-    };
     return {
-      ui: new firebaseui.auth.AuthUI(firebase.auth()),
-      uiConfig: {
-        signInOptions: [
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-          firebase.auth.FacebookAuthProvider.PROVIDER_ID
-        ],
-        callbacks: {
-          signInSuccessWithAuthResult: function() {this.loginProcess()}
-        }
-      },
-      errorTranslations: errorTranslations,
       email: "",
       password: "",
       error: null,
       failedOn: {
         email: "",
         password: ""
-      },
-      loginPressed: false
+      }
     }
   },
   computed: {
@@ -117,18 +85,7 @@ export default {
           vm.failedOn.password = vm.password;
           if (vm.errorTranslations[err.message]) vm.error = vm.errorTranslations[err.message];
         });
-    },
-    loginProcess() {
-      this.$router.push({ path: `account` });
     }
-  },
-  mounted() {
-    this.ui.start("#firebaseui-auth-container", this.uiConfig);
-
-    let vm = this;
-    firebase.auth().onAuthStateChanged(function() {
-      if (vm.loginPressed) vm.$router.push({ path: "account" });
-    });
   }
 }
 </script>

@@ -13,7 +13,10 @@ const getDefaultState = () => {
       name: '',
       school: {
         name: '',
-        location: null
+        location: {
+          city: '',
+          state: ''
+        }
       },
       reviews: {
         course: [],
@@ -83,7 +86,7 @@ export default new Vuex.Store({
           name: res.data().name,
           matrices: res.data().matrices,
         });
-        dispatch('loadUserSchool', res.data().school);
+        if (res.data().school != "") dispatch('loadUserSchool', res.data().school);
       }).catch(err => {
         // eslint-disable-next-line no-console
         console.log(err);
