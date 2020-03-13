@@ -1,8 +1,7 @@
 <template>
   <v-app id="app">
-    <v-navigation-drawer
-      v-model="showDrawer"
-      app >
+    <v-navigation-drawer app
+      v-model="showDrawer" >
       <Drawer />
     </v-navigation-drawer>
 
@@ -11,12 +10,11 @@
 
     <LoginDialog />
 
-    <router-view>
+    <router-view class="pb-12">
     </router-view>
         
-    <v-footer
-      color="indigo"
-      app >
+    <v-footer absolute
+      color="indigo" >
       <span class="white--text">&copy; 2019</span>
     </v-footer>
   </v-app>

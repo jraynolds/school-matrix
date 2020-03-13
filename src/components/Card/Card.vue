@@ -1,144 +1,187 @@
 <template>
-  <v-card>
+  <v-card class="card pa-1 px-3" 
+    :class="{collapsed: isCollapsed, collapsible: isCollapsible && !isCollapsed, expandable: isCollapsed}"
+    v-on="isCollapsible ? { click: () => isCollapsed = !isCollapsed } : {}"
+    style="width: 750px;" >
+
+    <v-row class="pa-0 ma-0">
+      <v-col class="pa-0 ma-0">
+        <v-card-title class="pa-0 ma-0">{{ matrixable.name }}</v-card-title>
+      </v-col>
+
+      <v-col class="pa-0 ma-0 align-center d-flex">
+        <v-card-subtitle class="pa-0 ma-0 font-italic" v-if="type === 'school' && matrixable.focuses">
+          {{ matrixable.focuses.join(", ") }}
+        </v-card-subtitle>
+        <v-card-subtitle class="pa-0 ma-0 font-italic" v-else-if="type === 'course' && matrixable.disciplines">
+          {{ matrixable.disciplines.join(", ") }}
+        </v-card-subtitle>
+      </v-col>
+
+      <v-col class="flex-grow-0 pa-0 ma-0">
+        <v-card-title class="align-end pa-0 ma-0" 
+          style="word-break: normal; font-style: italic;" >
+          MATCH
+        </v-card-title>
+      </v-col>
+    </v-row>
+
     <v-row>
-      <v-col class="flex-grow-0 pr-0 image">
-        <v-img class="white--text align-end" height="200px" width="200px"
-          :src="matrixable.img" >
-          <v-card-title class="justify-center">{{ matrixable.name }}</v-card-title>
+      <v-col class="flex-grow-0 pl-3 image">
+        <v-img class="white--text" 
+          :class="align" 
+          height="200px" 
+          width="200px"
+          :src="image" >
         </v-img>
       </v-col>
 
-      <v-expand-x-transition>
-        <v-col v-show="!showWriteup" class="pl-0" style="max-height: 224px;">
-          <v-card-title class="text-left px-0 pt-0">Disciplines Taught:</v-card-title>
-          <v-card-subtitle class="text-right px-0 py-0">
-            <span v-for="(department, index) in departments" :key="index">
-              <i>{{ department }}</i>
-              <i v-if="index != departments.length-1">, </i>
-            </span>
-          </v-card-subtitle>
+      <Details class="pr-8"
+        :type="type" 
+        :matrixable="matrixable" />
 
-          <v-card-title class="text-left px-0">Active Classes:</v-card-title>
-          <v-card-subtitle class="text-right px-0 py-0">
-            <span v-for="(classTaught, index) in activeClasses" :key="index">
-              <i>{{ classTaught.title }}</i>
-              <i v-if="index != activeClasses.length-1">, </i>
-            </span>
-          </v-card-subtitle>
-          
-          <v-card-title class="text-left px-0">Previous Classes:</v-card-title>
-        </v-col>
-      </v-expand-x-transition>
-
-      <v-col class="flex-grow-0 pl-0" @click="showWriteup = !showWriteup">
-        <Matrix :matrix="matrix" :type="type" />
+      <v-col class="flex-grow-0 pl-0" >
+        <Matrix v-if="matrixable.matrix" :matrix="matrixable.matrix" :type="type" />
       </v-col>
-
-      <v-expand-x-transition>
-        <v-col class="ml-n1 pl-0 align-self-center" height="224" v-show="showWriteup" style="max-height: 224px;">
-          <v-spacer />
-          <v-card-text class="py-1 px-0"><b>Instructive:</b> Highly Instructive. <i>Match.</i></v-card-text>
-          <v-card-text class="py-1 px-0"><b>Instructive:</b> Highly Instructive. <i>Match.</i></v-card-text>
-          <v-card-text class="py-1 px-0"><b>Instructive:</b> Highly Instructive. <i>Match.</i></v-card-text>
-          <v-card-text class="py-1 px-0"><b>Instructive:</b> Highly Instructive. <i>Match.</i></v-card-text>
-          <v-card-text class="py-1 px-0"><b>Instructive:</b> Highly Instructive. <i>Match.</i></v-card-text>
-          <v-card-text class="py-1 px-0"><b>Instructive:</b> Highly Instructive. <i>Match.</i></v-card-text>
-        </v-col>
-      </v-expand-x-transition>
     </v-row>
 
-    <v-card-actions class="justify-center pa-0 mt-n3" style="height: 20px;">
-      <v-btn depressed @click="showRatings = !showRatings" 
+    <v-card-actions class="justify-center pa-0 mt-n3 mb-n3" 
+      style="height: 20px; z-index: 10;" >
+      <v-btn depressed v-if="matrixable.hasReviews"
+        @click.stop="reviewsExpand" 
         color="primary" 
-        class="ratingsButton" 
-        :style="[ showRatings ? {opacity: '1.0!important'} : {} ]">
-        RATINGS
-        <v-icon>{{ showRatings ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
+        class="reviewsButton" 
+        :style="[ showReviews ? {opacity: '1.0!important'} : {} ]"
+        style="z-index: 100;" >
+        REVIEWS
+        <v-icon>{{ showReviews ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
       </v-btn>
+
+      <v-btn depressed v-else
+        @click.stop="" 
+        disabled
+        color="primary" 
+        class="reviewsButton" 
+        style="z-index: 100;" >
+        REVIEWS
+        <v-icon>{{ showReviews ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
+      </v-btn>
+
+      <v-btn depressed @click.stop="" 
+        color="primary"
+        class="addReviewButton"
+        style="z-index: 100;" >
+        ADD REVIEW
+        <v-icon>mdi-comment-plus-outline</v-icon>
+      </v-btn>
+
     </v-card-actions>
     <v-expand-transition>
-      <div v-show="showRatings" class="ratings">
-        <Rating v-for="(rating, index) in ratings" 
+      <div v-show="showReviews" class="reviews pa-n2 ma-n2 mx-n3">
+        <Review v-for="(review, index) in reviews" 
           :key="index" 
-          :user="rating.user" 
+          :userEmail="review.user" 
           :index="index"
-          :review="rating.review"
+          :review="review"
           :type="type" />
       </div>
     </v-expand-transition>
+
   </v-card>
 </template>
 
 <script>
+import { getSchoolReviews, getCourseReviews, getTeacherReviews } from '@/scripts/dbActions.js'
+
 import Matrix from '@/components/Matrix/Matrix'
-import Rating from '@/components/Card/Rating'
+import Review from '@/components/Card/Review'
+import Details from '@/components/Card/Details'
+// import Writeup from '@/components/Card/Writeup'
 
 export default {
-  props: [ "matrixable", "comments", "type", "users", "classes" ],
+  props: [ "matrixable", "type", "startsCollapsed", "isCollapsible" ],
   components: {
     Matrix,
-    Rating
+    Review,
+    Details,
+    // Writeup
   },
   data() {
     return {
       showWriteup: false,
-      showRatings: false
+      reviews: [],
+      showReviews: false,
+      isCollapsed: false
     }
   },
   computed: {
-    departments() {
-      let departments = [];
-      for (let taughtClass of this.activeClasses) {
-        for (let department of taughtClass.departments) {
-          if (!departments.includes(department)) departments.push(department);
-        }
-      }
-      return departments;
+    align() {
+      if (!this.isCollapsed) return "align-end";
+      return "align-start";
     },
-    activeClasses() {
-      return this.classes.filter(c => c.teachers.includes(this.matrixable.id));
-    },
-    ratings() {
-      let ratings = [];
-      for (let user of this.users) {
-        let teacher = user.teachers.find(t => t.id == this.matrixable.id);
-        if (teacher && teacher.review) {
-          ratings.push({
-            user: user,
-            review: teacher.review
-          });
-        }
-      }
-      return ratings;
-    },
-    matrix() {
-      let matrixes = [];
-      let matrix = {};
-      for (let rating of this.ratings) matrixes.push(rating.review.matrix);
-      if (matrixes.length == 0) return;
-      for (let key in matrixes[0]) {
-        let sum = 0;
-        for (let matrix of matrixes) sum += matrix[key];
-        sum /= matrixes.length;
-        matrix[key] = sum;
-      }
-      return matrix;
+    image() {
+      if (this.matrixable.img) return this.matrixable.img;
+      return "https://i.imgur.com/IVLnmb.png";
     }
+  },
+  methods: {
+    reviewsExpand() {
+      // eslint-disable-next-line no-console
+      console.log("reviews expanding...");
+      if (!this.showReviews) this.loadReviews();
+      this.showReviews = !this.showReviews;
+    },
+    loadReviews() {
+      // eslint-disable-next-line no-console
+      console.log("loading reviews...");
+      if (this.type == "school") getSchoolReviews(this.matrixable.id).then(reviews => this.reviews = reviews);
+      else if (this.type == "course") getCourseReviews(this.matrixable.id).then(reviews => this.reviews = reviews);
+      else getTeacherReviews(this.matrixable.id).then(reviews => this.reviews = reviews);
+    }
+  },
+  mounted() {
+    // eslint-disable-next-line no-console
+    console.log(this.matrixable);
+    getCourseReviews(this.matrixable);
+    this.isCollapsed = this.startsCollapsed;
   }
 }
 </script>
 
 <style>
-.ratings {
-  background-color: aliceblue;
+.card {
+  transition: height .5s;
 }
 
-.ratingsButton {
+.v-card--link:before {
+  opacity: 0 !Important;
+}
+
+.collapsed {
+  height: 40px;
+  overflow-y: hidden;
+}
+
+.collapsible:hover {
+  background: aliceblue;
+  cursor: pointer;
+}
+
+.expandable:hover {
+  background: aliceblue;
+  cursor: pointer;
+}
+
+.reviews {
+  background-color: rgb(238, 242, 245, 0.5);
+}
+
+.reviewsButton, .addReviewButton {
   color: white !important;
   opacity: 0.5;
 }
 
-.ratingsButton:hover {
+.reviewsButton:hover, .addReviewButton:hover {
   opacity: 1;
 }
 

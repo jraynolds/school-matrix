@@ -26,17 +26,17 @@ const courseCollection = db.collection("courses")
 const schoolCollection = db.collection("schools")
 const courseReviewCollection = db.collection("courseReviews")
 // const teacherReviewCollection = db.collection("teacherReviews")
-// const schoolReviewCollection = db.collection("schoolReviews")
+const schoolReviewCollection = db.collection("schoolReviews")
 
 export {
-    db,
-    auth,
-    currentUser,
-    userCollection,
-    teacherCollection,
-    courseCollection,
-    schoolCollection,
-    courseReviewCollection,
-    // teacherReviewCollection,
-    // schoolReviewCollection
+  db,
+  auth,
+  currentUser,
+  userCollection,
+  teacherCollection,
+  courseCollection,
+  schoolCollection,
+  courseReviewCollection,
+  // teacherReviewCollection,
+  schoolReviewCollection
 }

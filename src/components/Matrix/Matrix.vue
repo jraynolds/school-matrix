@@ -204,6 +204,10 @@ export default {
       else if (this.labels.find(l => l.isHovered)) return 0;
       return 0.1;
     }
+  },
+  mounted() {
+    // eslint-disable-next-line no-console
+    console.log(this.matrix);
   }
 }
 </script>
