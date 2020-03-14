@@ -44,8 +44,6 @@ export default {
       if (name === "Location" && this.matrixable.location) return `${this.matrixable.location.city}, ${this.matrixable.location.state}`;
 
       if (name === "Instructors") {
-        // eslint-disable-next-line no-console
-        console.log(this.teachers.map(elem => {return elem.name}));
         return this.teachers.map(elem => {return elem.name}).join(", ");
       }
       if (name === "Description") return this.matrixable.description;

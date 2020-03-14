@@ -46,13 +46,13 @@
     </v-row>
 
     <v-card-actions class="justify-center pa-0 mt-n3 mb-n3" 
-      style="height: 20px; z-index: 10;" >
+      style="height: 20px; z-index: 9;" >
       <v-btn depressed v-if="matrixable.hasReviews"
         @click.stop="reviewsExpand" 
         color="primary" 
         class="reviewsButton" 
         :style="[ showReviews ? {opacity: '1.0!important'} : {} ]"
-        style="z-index: 100;" >
+        style="z-index: 9;" >
         REVIEWS
         <v-icon>{{ showReviews ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
       </v-btn>
@@ -62,7 +62,7 @@
         disabled
         color="primary" 
         class="reviewsButton" 
-        style="z-index: 100;" >
+        style="z-index: 9;" >
         REVIEWS
         <v-icon>{{ showReviews ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
       </v-btn>
@@ -70,7 +70,7 @@
       <v-btn depressed @click.stop="" 
         color="primary"
         class="addReviewButton"
-        style="z-index: 100;" >
+        style="z-index: 9;" >
         ADD REVIEW
         <v-icon>mdi-comment-plus-outline</v-icon>
       </v-btn>

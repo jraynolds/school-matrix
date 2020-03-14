@@ -1,6 +1,7 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer app
+      temporary
       v-model="showDrawer" >
       <Drawer />
     </v-navigation-drawer>
