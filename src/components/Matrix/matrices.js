@@ -1,4 +1,12 @@
 const getDefaultMatrixSet = (value = 3) => {
+  let school = {
+    Accommodating: value,
+    Demanding: value,
+    Grounds: value,
+    Progressive: value,
+    Resources: value,
+    Transparent: value
+  };
   let course = {
     Experimental: value,
     "Fast-paced": value,
@@ -15,22 +23,30 @@ const getDefaultMatrixSet = (value = 3) => {
     Skillful: value,
     Strict: value
   };
-  let school = {
-    Accommodating: value,
-    Demanding: value,
-    Grounds: value,
-    Progressive: value,
-    Resources: value,
-    Transparent: value
-  };
   
   return {
+    school: school,
     course: course,
-    teacher: teacher,
-    school: school
+    teacher: teacher
   }
 } 
 
+const getDefaultMatrixOrder = () => {
+  let school = [ "Accommodating", "Demanding", "Grounds", "Progressive", "Resources", "Transparent"];
+  let course = [ "Fast-paced", "Experimental", "Hands-on", "Student-led", "Lecturing", "Relevant"];
+  let teacher = [ "Approachable", "Innovative", "Inspirational", "Instructive", "Skillful", "Strict"];
+  return { school: school, course: course, teacher: teacher };
+}
+
+const getMatrixColors = () => {
+  let school = { main: "#4abd64", light: "#aaff99" };
+  let course = { main: "#4abd64", light: "#aaff99" };
+  let teacher = { main: "#4abd64", light: "#aaff99" };
+  return { school: school, course: course, teacher: teacher };
+}
+
 export {
-  getDefaultMatrixSet
+  getDefaultMatrixSet,
+  getDefaultMatrixOrder,
+  getMatrixColors
 }

@@ -14,3 +14,6 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+const VueScrollTo = require('vue-scrollto');
+Vue.use(VueScrollTo);

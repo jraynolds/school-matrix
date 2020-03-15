@@ -1,5 +1,5 @@
 <template>
-  <div class="labelString" :style="{ zIndex: labelIndex+1 }">
+  <div class="labelString" :style="{ zIndex: labelIndex+1, color: textColor }">
     <LabelChar v-for="(char, index) of string.split('')" 
       :key="index" 
       :char="char"
@@ -17,7 +17,7 @@
 import LabelChar from '@/components/Matrix/LabelChar'
 
 export default {
-  props: [ "string", "labelIndex", "elem", "elems" ],
+  props: [ "string", "labelIndex", "elem", "elems", "textColor" ],
   components: {
     LabelChar
   }

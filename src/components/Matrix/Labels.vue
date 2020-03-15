@@ -5,7 +5,8 @@
       :string="elem.label" 
       :labelIndex="index"
       :elem="elem"
-      :elems="labels" />
+      :elems="labels"
+      :textColor="textColor" />
   </div>
 </template>
 
@@ -13,7 +14,7 @@
 import LabelString from '@/components/Matrix/LabelString'
 
 export default {
-  props: [ "labels" ],
+  props: [ "labels", "textColor" ],
   components: {
     LabelString
   },

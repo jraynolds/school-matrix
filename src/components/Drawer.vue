@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isLoggedIn">
-    <v-list-item>
+  <div>
+    <v-list-item v-if="isLoggedIn">
       <v-list-item-avatar>
         <v-img src="https://i.imgur.com/C5tSvb.png" />
       </v-list-item-avatar>
@@ -21,26 +21,7 @@
       </v-list-item-icon>
     </v-list-item>
 
-    <v-divider></v-divider>
-
-    <v-list dense>
-
-      <v-list-item link v-for="item of items" :key="item.title">
-        <v-list-item-icon>
-          <v-icon v-text="`mdi-${item.icon}`" />
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title class="text-left">
-            {{ `Your ${item.title}` }}
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-    </v-list>
-  </div>
-
-  <div v-else>
-    <v-list-item>
+    <v-list-item v-else>
       <v-list-item-icon>
         <v-icon large>mdi-account</v-icon>
       </v-list-item-icon>
@@ -64,8 +45,7 @@
     <v-divider></v-divider>
 
     <v-list dense>
-
-      <v-list-item link disabled v-for="item of items" :key="item.title">
+      <v-list-item :to="item.link" v-for="item of items" :key="item.title">
         <v-list-item-icon>
           <v-icon v-text="`mdi-${item.icon}`" />
         </v-list-item-icon>
@@ -75,8 +55,8 @@
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-
     </v-list>
+
   </div>
 </template>
 
@@ -86,9 +66,9 @@ import { auth } from "@/firebaseConfig.js"
 export default {
   data() {
     let items = [
-      { title: "account", icon: "account" },
+      { title: "account", icon: "account", link: "/account" },
+      { title: "models", icon: "hexagon-multiple-outline", link: "/models" },
       { title: "reviews", icon: "comment-text-outline" },
-      { title: "models", icon: "hexagon-multiple-outline" },
       { title: "recommendations", icon: "hexagon-slice-6" },
     ]
     return { 

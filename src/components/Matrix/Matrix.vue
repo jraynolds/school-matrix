@@ -1,6 +1,6 @@
 <template>
   <div class="matrix justify-center" :class="{ small: isSmall }" :style="{ width: leg, height: leg }">
-    <Labels :labels="labels" v-if="!isSmall"/>
+    <Labels :labels="labels" v-if="!isSmall" :textColor="textColor" />
     <svg width="200" height="200">
       <defs>
         <mask :id="`statsMask${id}`" x="0" y="0" width="200" height="200">
@@ -15,7 +15,7 @@
           :x2="valueToPoint(0, rotation).x" 
           :y2="valueToPoint(0, rotation).y"
           :labels="labels" 
-          :stroke="'rgba(0,0,0,1)'"
+          :stroke="lineColor"
           class="labelLine"
           :style="{ opacity: getLineOpacity(index) }" />
         <polygon v-for="(color, index) in polygonColors" 
@@ -24,9 +24,10 @@
           :fill="color"
           :style="`mask: url(#statsMask${id})`" />
         <polygon :points="pointArray([6,6,6,6,6,6])" 
-          stroke="rgba(0, 0, 0, 0.2)" 
+          :stroke="lineColor"
+          style="opacity: 0.4" 
           fill="none" />
-        <circle id="help" class="circleOutline" cx="100" cy="100" r="80" />
+        <circle id="help" class="circleOutline" cx="100" cy="100" r="80" :stroke="lineColor" />
         <path id="curve" d="M180,100c0,44.2-35.8,80-80,80s-80-35.8-80-80s35.8-80,80-80S180,55.8,180,100z" fill="transparent" />
       </g>
     </svg>
@@ -37,7 +38,22 @@
 import Labels from '@/components/Matrix/Labels'
 
 export default {
-  props: [ "matrix", "type", "isSmall" ],
+  props: {
+    matrix: Object,
+    type: String,
+    lineColor: {
+      type: String,
+      default: "black"
+    },
+    textColor: {
+      type: String,
+      default: "black"
+    },
+    isSmall: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     Labels
   },
@@ -231,7 +247,6 @@ export default {
 
 .circleOutline {
   fill: transparent;
-  stroke: rgba(0, 0, 0, .6);
 }
 
 .polyFull {
