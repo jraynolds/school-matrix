@@ -32,16 +32,16 @@ const getDefaultMatrixSet = (value = 3) => {
 } 
 
 const getDefaultMatrixOrder = () => {
-  let school = [ "Accommodating", "Demanding", "Grounds", "Progressive", "Resources", "Transparent"];
-  let course = [ "Fast-paced", "Experimental", "Hands-on", "Student-led", "Lecturing", "Relevant"];
-  let teacher = [ "Approachable", "Innovative", "Inspirational", "Instructive", "Skillful", "Strict"];
+  let school = [ "Accommodating", "Demanding", "Grounds", "Progressive", "Resources", "Transparent" ];
+  let course = [ "Fast-paced", "Experimental", "Hands-on", "Student-led", "Lecturing", "Relevant" ];
+  let teacher = [ "Approachable", "Innovative", "Inspirational", "Instructive", "Skillful", "Strict" ];
   return { school: school, course: course, teacher: teacher };
 }
 
 const getMatrixColors = () => {
-  let school = { main: "#4abd64", light: "#aaff99" };
+  let school = { main: "#bb8747", light: "#ff9c73" };
   let course = { main: "#4abd64", light: "#aaff99" };
-  let teacher = { main: "#4abd64", light: "#aaff99" };
+  let teacher = { main: "#4873bd", light: "#99e5ff" };
   return { school: school, course: course, teacher: teacher };
 }
 

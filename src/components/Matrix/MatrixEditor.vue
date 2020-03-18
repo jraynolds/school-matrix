@@ -1,5 +1,5 @@
 <template>
-	<v-card light style="width: 100%;">
+	<v-card light class="pr-5" style="width: 100%;">
 		<v-tabs fixed-tabs v-model="tab">
 			<v-tab>Guided</v-tab>
 			<v-tab>Advanced</v-tab>
@@ -11,7 +11,7 @@
 					<v-col class="d-flex justify-center align-center">
 						<Matrix :matrix="matrix" :type="type" />
 					</v-col>
-					<v-col class="pr-6" style="max-width: 380px;">
+					<v-col class="pr-2" style="max-width: 380px;">
 						<GuidedEditor :matrix="matrix" :type="type" />
 					</v-col>
 				</v-row>
@@ -62,6 +62,12 @@
 				</v-row>
 			</v-tab-item>
 		</v-tabs-items>
+
+		<v-card-actions v-if="doneButton">
+			<v-spacer />
+			<v-btn color="primary" @click.stop="$emit('doneClicked')">Done</v-btn>
+			<v-spacer />
+		</v-card-actions>
 	</v-card>
 </template>
 
@@ -72,21 +78,23 @@ import Matrix from "@/components/Matrix/Matrix"
 import GuidedEditor from "@/components/Matrix/GuidedEditor"
 
 export default {
-	props: [ "matrix", "type" ],
+	props: [ "matrix", "type", "doneButton" ],
 	components: {
 		Matrix,
 		GuidedEditor
 	},
 	data() {
 		return {
-			tab: 1,
-			matrixOrder: [],
-			matrixColors: {}
+			tab: 1
 		}
 	},
-	beforeMount() {
-		this.matrixOrder = getDefaultMatrixOrder()[this.type];
-		this.matrixColors = getMatrixColors()[this.type];
+	computed: {
+		matrixOrder() {
+			return getDefaultMatrixOrder()[this.type];
+		},
+		matrixColors() {
+			return getMatrixColors()[this.type];
+		}
 	}
 }
 </script>
