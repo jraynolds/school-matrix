@@ -7,11 +7,12 @@
 
 		<v-tabs-items v-model="tab">
 			<v-tab-item>
-				<v-row>
-					<v-col>
+				<v-row class="flex-nowrap">
+					<v-col class="d-flex justify-center align-center">
 						<Matrix :matrix="matrix" :type="type" />
 					</v-col>
-					<v-col>
+					<v-col class="pr-6" style="max-width: 380px;">
+						<GuidedEditor :matrix="matrix" :type="type" />
 					</v-col>
 				</v-row>
 			</v-tab-item>
@@ -68,11 +69,13 @@
 import { getDefaultMatrixOrder, getMatrixColors } from "@/components/Matrix/matrices.js"
 
 import Matrix from "@/components/Matrix/Matrix"
+import GuidedEditor from "@/components/Matrix/GuidedEditor"
 
 export default {
 	props: [ "matrix", "type" ],
 	components: {
-		Matrix
+		Matrix,
+		GuidedEditor
 	},
 	data() {
 		return {
