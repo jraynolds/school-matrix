@@ -68,7 +68,7 @@ export default {
     let items = [
       { title: "account", icon: "account", link: "/account" },
       { title: "models", icon: "hexagon-multiple-outline", link: "/models" },
-      { title: "reviews", icon: "comment-text-outline" },
+      { title: "reviews", icon: "comment-text-outline", link: "/reviews" },
       { title: "recommendations", icon: "hexagon-slice-6" },
     ]
     return { 

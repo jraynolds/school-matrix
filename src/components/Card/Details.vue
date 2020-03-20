@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { getTeachers, getCoursesByTeacher } from "@/scripts/dbActions.js"
+import { getDocumentsWhere, getDocumentsByIDs } from "@/scripts/dbActions.js"
 
 export default {
   props: [ "type", "matrixable" ],
@@ -53,9 +53,15 @@ export default {
     }
   },
   mounted() {
-    if (this.type === "course") getTeachers(this.matrixable.teachers).then(teachers => this.teachers = teachers);
+    if (this.type === "course") getDocumentsByIDs(this.matrixable.teachers, "teacher", true).then(
+        teachers => this.teachers = teachers
+      );
 
-    if (this.type === "teacher") getCoursesByTeacher(this.matrixable.id).then(courses => this.courses = courses);
+    if (this.type === "teacher") getDocumentsWhere(
+        "course", "teachers", "array-contains", this.matrixable.id
+      ).then(
+        courses => this.courses = courses
+      );
   }
 }
 </script>

@@ -68,6 +68,7 @@
       </v-btn>
 
       <v-btn depressed @click.stop="" 
+        v-show="reviewsAddable"
         color="primary"
         class="addReviewButton"
         style="z-index: 9;" >
@@ -91,7 +92,7 @@
 </template>
 
 <script>
-import { getSchoolReviews, getCourseReviews, getTeacherReviews } from '@/scripts/dbActions.js'
+import { getDocumentsWhere } from '@/scripts/dbActions.js'
 
 import Matrix from '@/components/Matrix/Matrix'
 import Review from '@/components/Card/Review'
@@ -99,7 +100,22 @@ import Details from '@/components/Card/Details'
 // import Writeup from '@/components/Card/Writeup'
 
 export default {
-  props: [ "matrixable", "type", "startsCollapsed", "isCollapsible" ],
+  props: {
+    matrixable: Object,
+    type: String,
+    startsCollapsed: {
+      type: Boolean,
+      default: false
+    },
+    isCollapsible: {
+      type: Boolean,
+      default: false
+    },
+    reviewsAddable: {
+      type: Boolean,
+      default: true
+    }
+  },
   components: {
     Matrix,
     Review,
@@ -134,15 +150,13 @@ export default {
     loadReviews() {
       // eslint-disable-next-line no-console
       console.log("loading reviews...");
-      if (this.type == "school") getSchoolReviews(this.matrixable.id).then(reviews => this.reviews = reviews);
-      else if (this.type == "course") getCourseReviews(this.matrixable.id).then(reviews => this.reviews = reviews);
-      else getTeacherReviews(this.matrixable.id).then(reviews => this.reviews = reviews);
+      let user = this.$store.getters.getUser.email;
+      getDocumentsWhere(this.type + "Review", "user", "==", user, user, true).then(
+        reviews => this.reviews = reviews
+      );
     }
   },
   mounted() {
-    // eslint-disable-next-line no-console
-    console.log(this.matrixable);
-    getCourseReviews(this.matrixable);
     this.isCollapsed = this.startsCollapsed;
   }
 }

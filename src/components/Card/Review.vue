@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { getUser } from "@/scripts/dbActions.js"
+import { getDocumentByID } from "@/scripts/dbActions.js"
 
 import Matrix from '@/components/Matrix/Matrix'
 
@@ -51,7 +51,7 @@ export default {
     }
   },
   mounted() {
-    getUser(this.userEmail).then(user => {
+    getDocumentByID(this.userEmail, "user").then(user => {
       this.user = user;
     });
   }

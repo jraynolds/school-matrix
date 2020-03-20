@@ -25,7 +25,7 @@ const teacherCollection = db.collection("teachers")
 const courseCollection = db.collection("courses")
 const schoolCollection = db.collection("schools")
 const courseReviewCollection = db.collection("courseReviews")
-// const teacherReviewCollection = db.collection("teacherReviews")
+const teacherReviewCollection = db.collection("teacherReviews")
 const schoolReviewCollection = db.collection("schoolReviews")
 
 export {
@@ -37,6 +37,6 @@ export {
   courseCollection,
   schoolCollection,
   courseReviewCollection,
-  // teacherReviewCollection,
+  teacherReviewCollection,
   schoolReviewCollection
 }

@@ -25,9 +25,9 @@
       </v-row>
     </v-expand-transition>
     <v-row>
-      <v-col v-for="matrix of matrixOrder" :key="matrix">
-        <v-col cols="12"><h2>{{ upperFirst(matrix) }} Model</h2></v-col>
-        <v-col cols="12"><Matrix :matrix="userMatrices[matrix]" :type="matrix"/></v-col>
+      <v-col v-for="(matrix, id) of $store.getters.getUser.matrices" :key="id">
+        <v-col cols="12"><h2>{{ upperFirst(id) }} Model</h2></v-col>
+        <v-col cols="12"><Matrix :matrix="matrix" :type="id"/></v-col>
         <v-col cols="12">
           <v-btn color="primary" 
             @click.stop="dialogOpen = true; dialogMatrix = userMatrices[matrix]; dialogMatrixType = matrix">
@@ -36,11 +36,16 @@
         </v-col>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-btn color="primary" @click="saveModels()">Save your models</v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-import { getDefaultMatrixSet } from "@/components/Matrix/matrices.js"
+import { updateUserInfo } from "@/scripts/dbActions.js"
 
 import Matrix from "@/components/Matrix/Matrix"
 import Instructional from "@/components/Instructional"
@@ -66,10 +71,11 @@ export default {
   methods: {
     upperFirst(string) {
       return string.slice(0, 1).toUpperCase() + string.slice(1);
+    },
+    saveModels() {
+      updateUserInfo({ matrices: this.userMatrices}, 
+        this.$store.getters.getUser.email, this.$store);
     }
-  },
-  beforeMount() {
-    this.userMatrices = getDefaultMatrixSet();
   }
 }
 </script>

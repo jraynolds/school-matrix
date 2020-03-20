@@ -117,36 +117,6 @@ export default new Vuex.Store({
     setLoginShown({ commit }, shown) {
       commit('SET_LOGIN_SHOWN', shown);
     },
-    // login: ({ commit, dispatch }, { token, user }) => {
-    // login: ({ commit }, { token, user }) => {
-    //   commit('SET_TOKEN', token);
-    //   commit('SET_USER', user);
-
-    //   Axios.defaults.headers.commom['Authorization'] = `Bearer ${token}`
-    // },
-    // login({commit}, user) {
-    //   return new Promise((resolve, reject) => {
-    //     firebase
-    //     .auth()
-    //     .signInWithEmailAndPassword(vm.email, vm.password)
-    //     .then(resp => {
-
-    //       vm.$store.commit('SET_LOGIN_SHOWN', false);
-    //       vm.$router.push({ path: "account" });
-    //       resolve(resp);
-    //     })
-    //     .catch(err => {
-    //       vm.failedOn.email = vm.email;
-    //       vm.failedOn.password = vm.password;
-    //       if (vm.errorTranslations[err.message]) vm.error = vm.errorTranslations[err.message];
-    //       reject(err);
-    //     });
-    //   });
-      
-    //   return new Promise((resolve, reject) => {
-    //     commit('auth_request')
-    //   });
-    // },
     logout: ({ commit }) => {
       commit('RESET', '');
     }

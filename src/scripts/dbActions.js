@@ -1,18 +1,101 @@
-import { userCollection, schoolCollection, schoolReviewCollection, courseCollection, teacherCollection } from "@/firebaseConfig.js"
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
+import {
+  userCollection, 
+  schoolCollection, 
+  courseCollection, 
+  teacherCollection ,
+  schoolReviewCollection, 
+  courseReviewCollection, 
+  teacherReviewCollection, 
+} from "@/firebaseConfig.js"
+/* eslint-enable no-unused-vars */
 import { getDefaultMatrixSet } from '@/components/Matrix/matrices.js'
-import { courseReviewCollection } from "../firebaseConfig";
+
+const imports = {
+  userCollection: userCollection, 
+  schoolCollection: schoolCollection, 
+  courseCollection: courseCollection, 
+  teacherCollection: teacherCollection,
+  schoolReviewCollection: schoolReviewCollection, 
+  courseReviewCollection: courseReviewCollection,
+  teacherReviewCollection: teacherReviewCollection, 
+}
 
 // UNIVERSAL OPERATIONS
-const getDocumentByID = (id, docType) => {
-  let collection = null;
-  if (docType == "user") collection = userCollection;
-  else if (docType == "school") collection = schoolCollection;
-  else if (docType == "teacher") collection = courseCollection;
-  else collection = courseCollection;
+const getDocumentByID = (id, docType, debug=false) => {
+  if (debug) console.log(`Getting document by ID. ID = ${id}, docType = ${docType}.`);
+  let collection = imports[docType + "Collection"];
+  if (debug) console.log("Collection:")
+  if (debug) console.log(collection);
   
   return new Promise((resolve, reject) => {
     collection.doc(id).get().then(doc => {
+      if (debug) console.log("Document:")
+      if (debug) console.log(doc.data());
       resolve(doc.data());
+    }).catch(err => {
+      reject(Error(err));
+    });
+  });
+}
+
+const getDocumentsByIDs = (ids, docType, debug=false) => {
+  if (debug) console.log(`Getting documents by IDs. DocType = ${docType}. IDs:`);
+  if (debug) console.log(ids);
+  let collection = imports[docType + "Collection"];
+  if (debug) console.log("Collection:")
+  if (debug) console.log(collection);
+  let documents = [];
+  
+  return new Promise((resolve, reject) => {
+    collection.get().then(snapshot => {
+      if (snapshot.empty) {
+        if (debug) console.log("The snapshot's empty!");
+      } 
+      snapshot.forEach((doc) => {
+        if (!ids.includes(doc.id)) return;
+        let tempDoc = doc.data();
+        tempDoc.id = doc.id;
+        if (debug) console.log("Document:")
+        if (debug) console.log(tempDoc);
+        documents.push(tempDoc);
+      });
+      if (debug) console.log("Documents:")
+      if (debug) console.log(documents);
+      resolve(documents);
+    }).catch(err => {
+      reject(Error(err));
+    });
+  });
+}
+
+const getDocumentsWhere = (docType, field, comparator, target, user=null, debug=false) => {
+  if (debug) console.log(`Getting documents where. docType = ${docType}, field = ${field}, comparator = ${comparator}, target = ${target}, user = ${user}.`);
+  let collection = imports[docType + "Collection"];
+  if (debug) console.log("Collection:")
+  if (debug) console.log(collection);
+  let documents = [];
+
+  return new Promise((resolve, reject) => {
+    collection.where(field, comparator, target).get().then(snapshot => {
+      if (snapshot.empty) {
+        if (debug) console.log("The snapshot's empty!");
+      }
+      snapshot.forEach(doc => {
+        if (debug) console.log("Document:")
+        if (debug) console.log(doc.data());
+        if (user && doc.data().user !== user) {
+          if (debug) console.log("This document has a different associated user and was discarded.");
+          return;
+        }
+        let tempDoc = doc.data();
+        tempDoc.id = doc.id;
+        documents.push(tempDoc);
+      });
+      if (debug) console.log("Documents:")
+      if (debug) console.log(documents);
+      resolve(documents);
     }).catch(err => {
       reject(Error(err));
     });
@@ -20,16 +103,6 @@ const getDocumentByID = (id, docType) => {
 }
 
 // USER OPERATIONS
-
-const getUser = (email) => {
-  return new Promise((resolve, reject) => {
-    userCollection.doc(email).get().then(doc => {
-      resolve(doc.data());
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
 
 const isNewUser = (authResult) => {
   return new Promise((resolve, reject) => {
@@ -68,206 +141,61 @@ const updateUserInfo = (info, email, store) => {
   });
 }
 
-// SCHOOL OPERATIONS
-
-const getSchool = (id) => {
-  return new Promise((resolve, reject) => {
-    schoolCollection.doc(id).get().then(doc => 
-      {
-        let school = doc.data();
-        school.id = doc.id;
-        resolve(school);
-      }).catch(err => {
-        reject(Error(err));
-      });
-  });
+const getUserReviews = (user, debug=false) => {
+  return Promise.all([
+    getDocumentsWhere("schoolReview", "user", "==", user, null, debug),
+    getDocumentsWhere("courseReview", "user", "==", user, null, debug),
+    getDocumentsWhere("teacherReview", "user", "==", user, null, debug)
+  ]).then((reviews) => {
+    if (debug) console.log("Reviews:");
+    if (debug) console.log(reviews);
+    return {
+      schools: reviews[0],
+      courses: reviews[1],
+      teachers: reviews[2]
+    };
+  })
 }
 
-const getSchools = () => {
-  let schools = [];
-
-  return new Promise((resolve, reject) => {
-    schoolCollection.get().then(snapshot => {
-      if (snapshot.empty) return;
-      snapshot.forEach(doc => {
-        schools.push({
-          text: `${doc.data().name}, ${doc.data().location.city} ${doc.data().location.state}`,
-          value: doc.id
-        });
-      })
-      resolve(schools);
-    }).catch(err => {
-      reject(Error(err));
+const getUserReviewItems = (user, debug=false) => {
+  return Promise.all([
+    getDocumentsWhere("schoolReview", "user", "==", user, null, debug),
+    getDocumentsWhere("courseReview", "user", "==", user, null, debug),
+    getDocumentsWhere("teacherReview", "user", "==", user, null, debug)
+  ]).then((reviews) => {
+    if (debug) console.log("Reviews:");
+    if (debug) console.log(reviews);
+    let schoolIDs = reviews[0].map(r => r.school);
+    if (debug) console.log(schoolIDs);
+    let courseIDs = reviews[1].map(r => r.course);
+    if (debug) console.log(courseIDs);
+    let teacherIDs = reviews[2].map(r => r.teacher);
+    if (debug) console.log(teacherIDs);
+    return Promise.all([
+      getDocumentsByIDs(schoolIDs, "school", debug),
+      getDocumentsByIDs(courseIDs, "course", debug),
+      getDocumentsByIDs(teacherIDs, "teacher", debug)
+    ]).then((items) => {
+      if (debug) console.log("Items:");
+      if (debug) console.log(items);
+      return {
+        schools: items[0],
+        courses: items[1],
+        teachers: items[2]
+      }
     });
-  });
-}
-
-const getSchoolsAtLocation = (location) => {
-  let schools = [];
-
-  return new Promise((resolve, reject) => {
-    schoolCollection.where('location', '==', location).get().then(snapshot => {
-        if (snapshot.empty) resolve();
-        snapshot.forEach(doc => {
-          schools.push({
-            text: `${doc.data().name}, ${doc.data().location.city} ${doc.data().location.state}`,
-            value: doc.id
-          });
-        })
-        resolve(schools);
-      }).catch(err => {
-        reject(Error(err));
-      });
-  });
-}
-
-const getSchoolReviews = (school) => {
-  // eslint-disable-next-line no-console
-  console.log(school);
-  let reviews = [];
-  
-  return new Promise((resolve, reject) => {
-    schoolReviewCollection.where('school', '==', school).get().then(snapshot => {
-      // eslint-disable-next-line no-console
-      console.log(snapshot);
-      if (snapshot.empty) return;
-      snapshot.forEach(doc => {
-        reviews.push(doc.data());
-      });
-      resolve(reviews);
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
-
-// COURSE OPERATIONS
-
-const getCoursesAtSchool = (school) => {
-  let courses = [];
-
-  return new Promise((resolve, reject) => {
-    courseCollection.where('schools', 'array-contains', school).get().then(snapshot => {
-      // eslint-disable-next-line no-console
-      console.log(snapshot);
-      if (snapshot.empty) return;
-      snapshot.forEach(doc => {
-        // eslint-disable-next-line no-console
-        console.log(doc.data());
-        let course = doc.data();
-        course.id = doc.id;
-        courses.push(course);
-      });
-      // eslint-disable-next-line no-console
-      console.log(courses);
-      resolve(courses);
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
-
-const getCoursesByTeacher = (teacher) => {
-  let courses = [];
-
-  return new Promise((resolve, reject) => {
-    courseCollection.where('teachers', 'array-contains', teacher).get().then(snapshot => {
-      if (snapshot.empty) return;
-      snapshot.forEach(doc => {
-        courses.push(doc.data());
-      });
-      resolve(courses);
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
-
-const getCourseReviews = (course) => {
-  let reviews = [];
-  
-  return new Promise((resolve, reject) => {
-    courseReviewCollection.where('course', '==', course).get().then(snapshot => {
-      if (snapshot.empty) return;
-      snapshot.forEach(doc => {
-        let review = doc.data();
-        review.id = doc.id;
-        reviews.push(review);
-      });
-      resolve(reviews);
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
-
-// TEACHER OPERATIONS
-
-const getTeachersAtSchool = (school) => {
-  let teachers = [];
-
-  return new Promise((resolve, reject) => {
-    teacherCollection.where('schools', 'array-contains', school).get().then(snapshot => {
-      if (snapshot.empty) return;
-      snapshot.forEach(doc => {
-        let teacher = doc.data();
-        teacher.id = doc.id;
-        teachers.push(teacher);
-      });
-      resolve(teachers);
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
-
-const getTeacher = (id) => {
-  return new Promise((resolve, reject) => {
-    teacherCollection.doc(id).get().then(doc => {
-      let teacher = doc.data();
-      teacher.id = doc.id;
-      resolve(teacher);
-    }).catch(err => {
-      reject(Error(err));
-    });
-  });
-}
-
-const getTeachers = (ids) => {
-  let teachers = [];
-
-  return new Promise((resolve, reject) => {
-    for (let id of ids) {
-      teacherCollection.doc(id).get().then(doc => {
-        let teacher = doc.data();
-        teacher.id = doc.id;
-        teachers.push(teacher);
-      }).catch(err => {
-        reject(Error(err));
-      });
-    }
-    resolve(teachers);
   });
 }
 
 export {
   getDocumentByID,
+  getDocumentsWhere,
+  getDocumentsByIDs,
 
-  getUser,
   isNewUser,
   createNewUser,
   updateUserInfo,
-
-  getSchool,
-  getSchoolsAtLocation,
-  getSchools,
-  getSchoolReviews,
-
-  getCoursesAtSchool,
-  getCoursesByTeacher,
-  getCourseReviews,
-
-  getTeacher,
-  getTeachers,
-  getTeachersAtSchool
+  getUserReviews,
+  getUserReviewItems
 }
+/* eslint-enable no-console */
