@@ -6,7 +6,7 @@
 import firebase from "firebase"
 import * as firebaseui from "firebaseui"
 import "firebaseui/dist/firebaseui.css"
-import dbActions from "@/scripts/dbActions.js"
+import { getUser, createNewUser } from "@/scripts/dbActions.js"
 
 export default {
   data() {
@@ -33,9 +33,16 @@ export default {
   },
   methods: {
     signIn(authResult) {
-      dbActions.isNewUser(authResult).then(isNew => {
-        if (isNew) {
-          dbActions.createNewUser(authResult).then(() => {
+			// eslint-disable-next-line no-console
+			console.log("Signing in...");
+			// eslint-disable-next-line no-console
+			console.log(authResult);
+      getUser(authResult.user.email, true).then(user => {
+        if (!user) {
+          createNewUser(authResult, null, null, '', true).then(id => {
+						// eslint-disable-next-line no-console
+						console.log(id);
+						this.$store.dispatch("loadUserByID", id);
             this.$router.push({ path: `account` });
           });
         } else {

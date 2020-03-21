@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-const fb = require("@/firebaseConfig.js")
+import { getDocumentByID, getUserReviews } from './scripts/dbActions';
 
 Vue.use(Vuex)
 
@@ -8,7 +8,7 @@ const getDefaultState = () => {
   return {
     token: "",
     user: {
-      uid: '',
+      id: '',
       email: '',
       name: '',
       school: {
@@ -25,7 +25,8 @@ const getDefaultState = () => {
       },
       matrices: null,
     },
-    showLogin: false
+    showLogin: false,
+    showReviewDialog: false
   };
 };
 
@@ -44,6 +45,9 @@ export default new Vuex.Store({
     },
     getLoginShown: state => {
       return state.showLogin;
+    },
+    getReviewDialogShown: state => {
+      return state.showReviewDialog;
     }
   },
   mutations: {
@@ -51,8 +55,7 @@ export default new Vuex.Store({
       state.token = token;
     },
     SET_USER(state, user) {
-      state.user.uid = user.uid;
-      state.user.email = user.email;
+			state.user = user;
     },
     SET_USER_PROFILE(state, payload) {
       state.user.name = payload.name;
@@ -61,57 +64,34 @@ export default new Vuex.Store({
     SET_USER_SCHOOL(state, school) {
       state.user.school = school;
     },
-    SET_LOGIN_SHOWN(state, shown) {
-      state.showLogin = shown;
+    SET_LOGIN_SHOWN(state, isShown) {
+      state.showLogin = isShown;
     },
-    SET_USER_REVIEWS(state, payload) {
-      // eslint-disable-next-line no-console
-      console.log(payload);
-      state.user.reviews[payload.type] = payload.array;
+    SET_USER_REVIEWS(state, reviews) {
+      state.user.reviews = reviews;
+    },
+    SET_REVIEW_DIALOG_SHOWN(state, isShown) {
+      state.showReviewDialog = isShown;
     }
-    // RESET(state) {
-    //   Object.assign(state, getDefaultState());
-    // },
   },
   actions: {
     // User actions
-    loadUser({ commit, dispatch }, user) {
-      commit('SET_USER', user);
-      dispatch('loadUserProfile', user.email);
-      dispatch('loadUserReviews', user.email);
+		loadUser({ commit }, user) {
+			commit('SET_USER', user);
+		},
+		loadUserByID({ dispatch }, id=this.state.id) {
+			getDocumentByID("user", id, true).then(user => {
+				user.id = id;
+				dispatch('loadUser', user);
+				dispatch('loadUserReviews');
+			});
     },
-    loadUserProfile({ commit, dispatch }, email) {
-      fb.userCollection.doc(email).get().then(res =>{
-        commit('SET_USER_PROFILE', {
-          name: res.data().name,
-          matrices: res.data().matrices,
-        });
-        if (res.data().school != "") dispatch('loadUserSchool', res.data().school);
-      }).catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err);
-      });
-    },
-    loadUserSchool({ commit }, school) {
-      fb.schoolCollection.doc(school).get().then(res => {
-        commit('SET_USER_SCHOOL', res.data());
-      }).catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err);
-      });
-    },
-    loadUserReviews({ commit }, email) {
-      let course = [];
-      // let teacher = [];
-      // let school = [];
-
-      fb.courseReviewCollection.where('user', '==', email).get().then(snapshot => {
-        if (snapshot.empty) return;
-        snapshot.forEach(doc => {
-          course.push(doc.data());
-        })
-        commit('SET_USER_REVIEWS', { type: "course", array: course });
-      });
+    loadUserReviews({ commit }, id=this.state.user.id) {
+			// eslint-disable-next-line no-console
+			console.log(id);
+      getUserReviews(id).then(reviews => {
+				commit('SET_USER_REVIEWS', reviews);
+			});
     },
     // Document actions
     setLoginShown({ commit }, shown) {

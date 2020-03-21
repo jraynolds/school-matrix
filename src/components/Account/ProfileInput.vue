@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { getSchools } from '@/scripts/dbActions.js'
+// import { getSchools } from '@/scripts/dbActions.js'
 
 export default {
   data() {
@@ -158,8 +158,8 @@ export default {
   methods: {
     updateSchools() {
       // eslint-disable-next-line no-console
-      console.log(getSchools);
-      getSchools(this.inputFields.schools);
+      // console.log(getSchools);
+      // getSchools(this.inputFields.schools);
     },
     schoolChanged() {
       // eslint-disable-next-line no-console

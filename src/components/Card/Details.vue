@@ -53,7 +53,7 @@ export default {
     }
   },
   mounted() {
-    if (this.type === "course") getDocumentsByIDs(this.matrixable.teachers, "teacher", true).then(
+    if (this.type === "course") getDocumentsByIDs("teacher", this.matrixable.teachers).then(
         teachers => this.teachers = teachers
       );
 

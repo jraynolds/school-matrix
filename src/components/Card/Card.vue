@@ -67,7 +67,7 @@
         <v-icon>{{ showReviews ? "mdi-chevron-up" : "mdi-chevron-down" }}</v-icon>
       </v-btn>
 
-      <v-btn depressed @click.stop="" 
+      <v-btn depressed @click.stop="addReview()" 
         v-show="reviewsAddable"
         color="primary"
         class="addReviewButton"
@@ -98,6 +98,8 @@ import Matrix from '@/components/Matrix/Matrix'
 import Review from '@/components/Card/Review'
 import Details from '@/components/Card/Details'
 // import Writeup from '@/components/Card/Writeup'
+
+import { getDefaultMatrixSet } from '@/components/Matrix/matrices.js'
 
 export default {
   props: {
@@ -142,18 +144,20 @@ export default {
   },
   methods: {
     reviewsExpand() {
-      // eslint-disable-next-line no-console
-      console.log("reviews expanding...");
       if (!this.showReviews) this.loadReviews();
       this.showReviews = !this.showReviews;
     },
     loadReviews() {
-      // eslint-disable-next-line no-console
-      console.log("loading reviews...");
       let user = this.$store.getters.getUser.email;
       getDocumentsWhere(this.type + "Review", "user", "==", user, user, true).then(
         reviews => this.reviews = reviews
       );
+    },
+    addReview() {
+      let matrixable = this.matrixable;
+      matrixable.matrix = getDefaultMatrixSet()[this.type];
+      this.$emit("reviewing", this.matrixable, this.type);
+      this.$store.commit("SET_REVIEW_DIALOG_SHOWN", true);
     }
   },
   mounted() {

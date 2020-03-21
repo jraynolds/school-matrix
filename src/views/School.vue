@@ -2,7 +2,8 @@
   <v-container class="fill-height" fluid>
     <v-row class="justify-center ml-0">
       <Card :matrixable="school"
-        type="school" />
+        type="school"
+        v-on:reviewing="reviewing" />
     </v-row>
     <v-row class="justify-center ml-0">
       <v-col cols="12" class="pb-0 mb-n2">
@@ -14,7 +15,8 @@
         <Card :matrixable="course"
           :startsCollapsed="true"
           :isCollapsible="true"
-          type="course" />
+          type="course"
+          v-on:reviewing="reviewing"  />
       </v-col>
     </v-row>
     <v-row class="justify-center ml-0">
@@ -27,14 +29,15 @@
         <Card :matrixable="teacher"
           :startsCollapsed="true"
           :isCollapsible="true"
-          type="teacher" />
+          type="teacher"
+          v-on:reviewing="reviewing"  />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { getSchool, getCoursesAtSchool, getTeachersAtSchool } from "@/scripts/dbActions.js"
+import { getDocumentByID, getDocumentsWhere } from "@/scripts/dbActions.js"
 
 import Card from "@/components/Card/Card"
 
@@ -51,10 +54,23 @@ export default {
       teachers: []
     }
   },
+  methods: {
+    reviewing(matrixable, type) {
+      // eslint-disable-next-line no-console
+      console.log(matrixable);
+      // eslint-disable-next-line no-console
+      console.log(type);
+      this.$emit("reviewing", matrixable, type);
+    }
+  },
   mounted() {
-    getSchool(this.schoolID).then(school => this.school = school);
-    getCoursesAtSchool(this.schoolID).then(courses => this.courses = courses);
-    getTeachersAtSchool(this.schoolID).then(teachers => this.teachers = teachers);
+    getDocumentByID("school", this.schoolID).then(school => this.school = school);
+    getDocumentsWhere("course", "schools", "array-contains", this.schoolID).then(
+      courses => this.courses = courses
+    );
+    getDocumentsWhere("teacher", "schools", "array-contains", this.schoolID).then(
+      teachers => this.teachers = teachers
+    );
   }
 }
 </script>

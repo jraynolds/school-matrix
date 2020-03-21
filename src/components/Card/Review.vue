@@ -51,7 +51,7 @@ export default {
     }
   },
   mounted() {
-    getDocumentByID(this.userEmail, "user").then(user => {
+    getDocumentByID("user", this.userEmail).then(user => {
       this.user = user;
     });
   }

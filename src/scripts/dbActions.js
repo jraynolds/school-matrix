@@ -4,7 +4,7 @@ import {
   userCollection, 
   schoolCollection, 
   courseCollection, 
-  teacherCollection ,
+  teacherCollection,
   schoolReviewCollection, 
   courseReviewCollection, 
   teacherReviewCollection, 
@@ -22,8 +22,41 @@ const imports = {
   teacherReviewCollection: teacherReviewCollection, 
 }
 
+// WRITING OPERATIONS
+const addDocument = (docType, doc, debug=false) => {
+	if (debug) console.log(`Adding document of type ${docType}. Document:`);
+	if (debug) console.log(doc);
+	let collection = imports[docType + "Collection"];
+  if (debug) console.log("Collection:");
+	if (debug) console.log(collection);
+	
+	return new Promise((resolve, reject) => {
+		collection.add(doc).then(ref => {
+			resolve(ref.id);
+		}).catch(err => {
+			reject(Error(err));
+		});
+	})
+}
+
+const editDocument = (docType, id, doc, debug=false) => {
+	if (debug) console.log(`Editing document of type ${docType} at id ${id}. New data:`);
+	if (debug) console.log(doc);
+	let collection = imports[docType + "Collection"];
+  if (debug) console.log("Collection:");
+	if (debug) console.log(collection);
+	
+	return new Promise((resolve, reject) => {
+		collection.doc(id).set(doc, { merge: true }).then(ref => {
+			resolve(ref.id);
+		}).catch(err => {
+				reject(Error(err));
+		});
+	})
+}
+
 // UNIVERSAL OPERATIONS
-const getDocumentByID = (id, docType, debug=false) => {
+const getDocumentByID = (docType, id, debug=false) => {
   if (debug) console.log(`Getting document by ID. ID = ${id}, docType = ${docType}.`);
   let collection = imports[docType + "Collection"];
   if (debug) console.log("Collection:")
@@ -40,7 +73,7 @@ const getDocumentByID = (id, docType, debug=false) => {
   });
 }
 
-const getDocumentsByIDs = (ids, docType, debug=false) => {
+const getDocumentsByIDs = (docType, ids, debug=false) => {
   if (debug) console.log(`Getting documents by IDs. DocType = ${docType}. IDs:`);
   if (debug) console.log(ids);
   let collection = imports[docType + "Collection"];
@@ -103,37 +136,44 @@ const getDocumentsWhere = (docType, field, comparator, target, user=null, debug=
 }
 
 // USER OPERATIONS
-
-const isNewUser = (authResult) => {
-  return new Promise((resolve, reject) => {
-    userCollection.doc(authResult.user.email).get().then(doc => {
-      resolve(!doc.exists);
-    }).catch(err => {
-      reject(Error(err));
-    });
+const getUser = (email, debug) => {
+	if (debug) console.log(`Getting a user with email = ${email}`);
+	return new Promise((resolve, reject) => {
+		getDocumentsWhere("user", "email", "==", email, null, debug).then(docs => {
+			if (docs.length > 0) {
+				if (debug) console.log("There's a user with that email already.");
+				resolve(docs[0]);
+			} else {
+				if (debug) console.log("This is a new user!");
+				resolve(null);
+			}
+		}).catch(err => {
+			reject(Error(err));
+		});
   });
 }
 
-const createNewUser = (authResult, name, school='') => {
-  if (!name) name = authResult.user.displayName;
-  let matrixSet = getDefaultMatrixSet();
+const createNewUser = (authResult, email, name, school='', debug) => {
+	if (debug) console.log(`Creating new user. Email = ${email}, name = ${name}, School = ${school}. Authresult:`);
+	if (debug) console.log(authResult);
+	if (!name) name = authResult.user.displayName;
+	if (!email) email = authResult.user.email;
+	let matrixSet = getDefaultMatrixSet();
+	let userInfo = { name: name, email: email, school: school, matrices: matrixSet };
   return new Promise((resolve, reject) => {
-    userCollection.doc(authResult.user.email).set({
-      name: name,
-      school: school,
-      matrices: matrixSet
-    }).then(() => {
-      resolve();
-    }).catch(err => {
+		addDocument("user", userInfo, debug).then(id => {
+			resolve(id);
+		}).catch(err => {
       reject(Error(err));
-    });
+		});
   });
 }
 
 const updateUserInfo = (info, email, store) => {
   return new Promise((resolve, reject) => {
     userCollection.doc(email).update(info).then(() => {
-      store.dispatch('loadUserProfile', email);
+			// store.dispatch('loadUserProfile', email);
+			console.log(store);
       resolve();
     }).catch(err => {
       reject(Error(err));
@@ -188,11 +228,14 @@ const getUserReviewItems = (user, debug=false) => {
 }
 
 export {
+	addDocument,
+	editDocument,
+
   getDocumentByID,
   getDocumentsWhere,
   getDocumentsByIDs,
 
-  isNewUser,
+  getUser,
   createNewUser,
   updateUserInfo,
   getUserReviews,

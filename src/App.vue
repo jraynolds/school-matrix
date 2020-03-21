@@ -11,8 +11,9 @@
 
     <LoginDialog />
 
-    <router-view class="pb-12">
-    </router-view>
+    <ReviewDialog :reviewItem="reviewItem" :type="reviewType" />
+
+    <router-view class="pb-12" v-on:reviewing="reviewing" />
         
     <v-footer absolute
       color="indigo" >
@@ -23,41 +24,41 @@
 
 <script>
 import { auth } from "@/firebaseConfig"
-import store from "@/store.js"
 
 import Head from '@/components/Head'
 import Drawer from '@/components/Drawer'
 import LoginDialog from '@/components/Login/LoginDialog'
+import ReviewDialog from '@/components/Review/ReviewDialog'
 
 export default {
   components: {
     Head,
     Drawer,
-    LoginDialog
+    LoginDialog,
+    ReviewDialog
   },
   data() {
     return {
       id: "G3Y85OJ0WakBVZ8tKTgJ",
       showDrawer: false,
+      reviewItem: {},
+      reviewType: ""
     }
   },
   methods: {
     accountClicked() {
-      // eslint-disable-next-line no-console
-      // console.log(auth.currentUser);
       if (auth.currentUser && this.$route.name != 'account') this.$router.push('account');
       else if (auth.currentUser) this.$router.go();
       else this.$store.commit('SET_LOGIN_SHOWN', true);
+    },
+    reviewing(matrixable, type) {
+      this.reviewItem = matrixable;
+      this.reviewType = type;
     }
   },
-  beforeMount() {
-    // dbActions.setUser(this.id);
-  },
   created() {
-    auth.onAuthStateChanged(user => {
-      // eslint-disable-next-line no-console
-      // console.log(user);
-      if (user) store.dispatch('loadUser', user);
+    auth.onAuthStateChanged(() => {
+      // if (user) this.$store.dispatch('loadUser', user);
     });
   }
 }
