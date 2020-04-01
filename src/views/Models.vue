@@ -25,7 +25,7 @@
       </v-row>
     </v-expand-transition>
     <v-row>
-      <v-col v-for="(matrix, id) of $store.getters.getUser.matrices" :key="id">
+      <v-col v-for="(matrix, id) of $store.getters.user.matrices" :key="id">
         <v-col cols="12"><h2>{{ upperFirst(id) }} Model</h2></v-col>
         <v-col cols="12"><Matrix :matrix="matrix" :type="id"/></v-col>
         <v-col cols="12">
@@ -74,7 +74,7 @@ export default {
     },
     saveModels() {
       updateUserInfo({ matrices: this.userMatrices}, 
-        this.$store.getters.getUser.email, this.$store);
+        this.$store.getters.user.email, this.$store);
     }
   }
 }

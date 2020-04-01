@@ -53,7 +53,7 @@ export default {
 		}
 	},
 	mounted() {
-		getUserReviewItems(this.$store.getters.getUser.email).then((items) => {
+		getUserReviewItems(this.$store.getters.user.id).then((items) => {
 			// eslint-disable-next-line no-console
 			console.log(items);
 			this.items.school = items.schools;

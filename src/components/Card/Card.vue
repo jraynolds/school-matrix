@@ -148,7 +148,7 @@ export default {
       this.showReviews = !this.showReviews;
     },
     loadReviews() {
-      let user = this.$store.getters.getUser.email;
+      let user = this.$store.getters.user.email;
       getDocumentsWhere(this.type + "Review", "user", "==", user, user, true).then(
         reviews => this.reviews = reviews
       );

@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     isDisabled(index) {
-      if (index === 3 && this.$store.getters.getUser.name == "") return true;
+      if (index === 3 && !this.$store.getters.isLoggedIn) return true;
       return false;
     }
   }

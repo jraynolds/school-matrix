@@ -33,19 +33,14 @@ export default {
   },
   methods: {
     signIn(authResult) {
-			// eslint-disable-next-line no-console
-			console.log("Signing in...");
-			// eslint-disable-next-line no-console
-			console.log(authResult);
       getUser(authResult.user.email, true).then(user => {
         if (!user) {
           createNewUser(authResult, null, null, '', true).then(id => {
-						// eslint-disable-next-line no-console
-						console.log(id);
 						this.$store.dispatch("loadUserByID", id);
             this.$router.push({ path: `account` });
           });
         } else {
+					this.$store.dispatch("loadUserByID", user.id);
           this.$router.push({ path: `account` });
         }
       });

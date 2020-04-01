@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-list-item v-if="isLoggedIn">
+    <v-list-item v-if="$store.getters.isLoggedIn">
       <v-list-item-avatar>
         <v-img src="https://i.imgur.com/C5tSvb.png" />
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title class="text-left">
-          {{ $store.getters.getUser.name }}
+          {{ $store.getters.user.name }}
         </v-list-item-title>
       </v-list-item-content>
       <v-list-item-icon>
@@ -33,7 +33,7 @@
       <v-list-item-icon>
         <v-tooltip right>
           <template v-slot:activator="{ on }">
-            <v-btn class="px-2" style="min-width: 0px;" @click="$store.commit('SET_LOGIN_SHOWN', true)" v-on="on">
+            <v-btn class="px-2" style="min-width: 0px;" @click="$store.commit('set_login_dialog_shown', true)" v-on="on">
               <v-icon v-text="'mdi-login'" />
             </v-btn>
           </template>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { auth } from "@/firebaseConfig.js"
+// import { auth } from "@/firebaseConfig.js"
 
 export default {
   data() {
@@ -75,14 +75,10 @@ export default {
       items: items
     }
   },
-  computed: {
-    isLoggedIn() {
-      return this.$store.getters.getUser.name != '';
-    }
-  },
   methods: {
     logout() {
-      auth.signOut();
+			// auth.signOut();
+			this.$store.dispatch('logout');
       if (this.$route.name == "home") this.$router.go();
       else this.$router.push({ name: "home" });
     }

@@ -25,11 +25,11 @@ export default {
   },
   computed: {
     matrices() {
-      return this.$store.getters.getUser.matrices;
+      return this.$store.getters.user.matrices;
 		},
     aggregateMatrices() {
 			let aggregates = getDefaultMatrixSet();
-      let reviews = this.$store.getters.getUser.reviews;
+      let reviews = this.$store.getters.user.reviews;
 			if (!reviews) return aggregates;
       if (reviews.teacher.length > 0) aggregates.teacher = this.getAverageScores(aggregates.teacher, reviews.teacher);
       if (reviews.course.length > 0) aggregates.course = this.getAverageScores(aggregates.course, reviews.course);

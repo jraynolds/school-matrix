@@ -35,8 +35,8 @@ export default {
   },
   computed: {
     showDialog: {
-      get() { return this.$store.getters.getLoginShown },
-      set(value) { this.$store.commit('SET_LOGIN_SHOWN', value) }
+      get() { return this.$store.getters.loginDialogShown },
+      set(value) { this.$store.commit('set_login_dialog_shown', value) }
     }
   }
 }

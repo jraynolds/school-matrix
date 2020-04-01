@@ -108,7 +108,7 @@ export default {
   computed: {
     name: {
       get: function() {
-        return this.$store.getters.getUser.name;
+        return this.$store.getters.user.name;
       },
       set: function(newVal) {
         this.inputFields.name = newVal;
@@ -116,7 +116,7 @@ export default {
     },
     email: {
       get: function() {
-        return this.$store.getters.getUser.email;
+        return this.$store.getters.user.email;
       },
       set: function(newVal) {
         this.inputFields.email = newVal;
@@ -124,7 +124,7 @@ export default {
     },
     school: {
       get: function() {
-        let school = this.$store.getters.getUser.school;
+        let school = this.$store.getters.user.school;
         if (!school) return "";
         if (school.name === "") return "";
         return `${school.name}, ${school.location.city} ${school.location.state.slice(0, 2).toUpperCase()}`;

@@ -53,7 +53,7 @@ export default {
 				comment: this.ratingText, 
 				rating: this.rating, 
 				matrix: this.matrixable.matrix, 
-				user: this.$store.getters.getUser.email
+				user: this.$store.getters.user.email
 			};
 			review[this.type] = this.matrixable.id;
 			addUserReview(this.type, review);

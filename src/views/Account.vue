@@ -1,10 +1,9 @@
 <template>
   <v-container
     class="fill-height pt-10"
-    fluid 
-    v-if="$store.getters.getUser.name">
-    <ProfileInput />
-    <UserMatrices />
+    fluid>
+    <ProfileInput v-if="user" />
+    <UserMatrices v-if="user && $store.getters.user.matrices" />
   </v-container>
 </template>
 
@@ -18,7 +17,11 @@ export default {
     ProfileInput,
     UserMatrices
   },
-  
+	computed: {
+		user() {
+			return !!this.$store.getters.user;
+		}
+	}
 }
 </script>
 
