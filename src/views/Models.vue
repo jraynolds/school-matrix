@@ -25,12 +25,12 @@
       </v-row>
     </v-expand-transition>
     <v-row>
-      <v-col v-for="(matrix, id) of $store.getters.user.matrices" :key="id">
+      <v-col v-for="(matrix, id) in $store.getters.user.matrices" :key="id">
         <v-col cols="12"><h2>{{ upperFirst(id) }} Model</h2></v-col>
         <v-col cols="12"><Matrix :matrix="matrix" :type="id"/></v-col>
         <v-col cols="12">
           <v-btn color="primary" 
-            @click.stop="dialogOpen = true; dialogMatrix = userMatrices[matrix]; dialogMatrixType = matrix">
+            @click.stop="debug(matrix, id)">
             Edit
           </v-btn>
         </v-col>
@@ -69,6 +69,15 @@ export default {
     }
   },
   methods: {
+		debug(matrix, id) {
+			// eslint-disable-next-line no-console
+			console.log(matrix);
+			// eslint-disable-next-line no-console
+			console.log(id);
+			this.dialogOpen = true;
+			this.dialogMatrix = matrix;
+			this.dialogMatrixType = id;
+		},
     upperFirst(string) {
       return string.slice(0, 1).toUpperCase() + string.slice(1);
     },
@@ -76,7 +85,7 @@ export default {
       updateUserInfo({ matrices: this.userMatrices}, 
         this.$store.getters.user.email, this.$store);
     }
-  }
+	}
 }
 </script>
 

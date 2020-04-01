@@ -5,6 +5,25 @@ import { getDocumentByID } from './scripts/dbActions';
 
 Vue.use(Vuex)
 
+//     user: {
+//       id: '',
+//       email: '',
+//       name: '',
+//       school: {
+//         name: '',
+//         location: {
+//           city: '',
+//           state: ''
+//         }
+//       },
+//       reviews: {
+//         course: [],
+//         teacher: [],
+//         school: []
+//       },
+//       matrices: null,
+//     },
+
 export default new Vuex.Store({
   strict: true,
   state: {
